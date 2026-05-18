@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Timbre inteligente — Tocá para avisar que estás en la puerta" />
+  <meta name="theme-color" content="#0f0c29" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>🔔 Timbre</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-from: #0f0c29;
+      --bg-mid:  #302b63;
+      --bg-to:   #24243e;
+      --gold:    #f5c518;
+      --gold-dim: #c49b10;
+      --teal:    #00d4b1;
+      --danger:  #ff4d6d;
+      --success: #00e676;
+      --text:    #ffffff;
+      --text-dim: rgba(255,255,255,0.6);
+      --glass:   rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.12);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-mid) 50%, var(--bg-to) 100%);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: white;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite;
+      animation-delay: var(--delay, 0s);
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: var(--opacity, 0.6); transform: scale(1); }
+    }
+
+    .page {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      gap: 2rem;
+    }
+
+    /* Título del hogar */
+    .home-title {
+      text-align: center;
+    }
+    .home-icon {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: 0.4rem;
+      filter: drop-shadow(0 0 12px rgba(245,197,24,0.5));
+    }
+    .home-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text);
+    }
+    .home-sub {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+    }
+
+    /* Botón del timbre */
+    .bell-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      position: relative;
+    }
+
+    .ripple-ring {
+      position: absolute;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      opacity: 0;
+      animation: ripple 2.4s ease-out infinite;
+    }
+    .ripple-ring:nth-child(2) { animation-delay: 0.8s; }
+    .ripple-ring:nth-child(3) { animation-delay: 1.6s; }
+
+    @keyframes ripple {
+      0%   { transform: scale(0.7); opacity: 0.7; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .bell-btn {
+      position: relative;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: radial-gradient(circle at 35% 35%, #ffe066, var(--gold) 50%, var(--gold-dim));
+      box-shadow:
+        0 0 0 6px rgba(245,197,24,0.2),
+        0 0 40px rgba(245,197,24,0.4),
+        0 8px 40px rgba(0,0,0,0.5);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bell-btn:hover {
+      transform: scale(1.04);
+      box-shadow:
+        0 0 0 8px rgba(245,197,24,0.25),
+        0 0 60px rgba(245,197,24,0.6),
+        0 8px 40px rgba(0,0,0,0.5);
+    }
+    .bell-btn:active {
+      transform: scale(0.94);
+    }
+    .bell-btn.ringing {
+      animation: bellShake 0.5s ease-in-out;
+    }
+    @keyframes bellShake {
+      0%,100% { transform: rotate(0deg); }
+      20%      { transform: rotate(-18deg) scale(0.96); }
+      40%      { transform: rotate(18deg) scale(0.96); }
+      60%      { transform: rotate(-12deg); }
+      80%      { transform: rotate(12deg); }
+    }
+
+    .bell-icon {
+      font-size: 3.2rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .bell-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.65);
+    }
+
+    /* Status card */
+    .status-card {
+      width: 100%;
+      max-width: 340px;
+      padding: 1.2rem 1.4rem;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      text-align: center;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: all 0.4s ease;
+    }
+
+    .status-icon { font-size: 1.8rem; }
+    .status-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+    .status-text strong { color: var(--text); }
+
+    .status-card.state-idle     { border-color: var(--glass-border); }
+    .status-card.state-loading  { border-color: var(--teal); box-shadow: 0 0 20px rgba(0,212,177,0.15); }
+    .status-card.state-success  { border-color: var(--success); box-shadow: 0 0 20px rgba(0,230,118,0.2); }
+    .status-card.state-error    { border-color: var(--danger); box-shadow: 0 0 20px rgba(255,77,109,0.2); }
+    .status-card.state-toofar   { border-color: #ff8c42; box-shadow: 0 0 20px rgba(255,140,66,0.2); }
+
+    /* Loading dots */
+    .dots span {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      margin: 0 2px;
+      animation: dotPulse 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40%            { transform: scale(1); opacity: 1; }
+    }
+
+    /* Footer */
+    .footer {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.25);
+      pointer-events: none;
+    }
+
+    /* Geolocation permission hint */
+    .geo-hint {
+      width: 100%;
+      max-width: 340px;
+      padding: 0.8rem 1rem;
+      background: rgba(245,197,24,0.08);
+      border: 1px solid rgba(245,197,24,0.2);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    @media (prefers-color-scheme: light) {
+      html, body { background: #0f0c29; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Estrellas decorativas de fondo -->
+<canvas class="stars" id="starsCanvas"></canvas>
+
+<main class="page" id="mainPage">
+
+  <!-- Título del hogar -->
+  <div class="home-title" id="homeTitle">
+    <span class="home-icon">🏠</span>
+    <div class="home-name" id="homeName">Cargando...</div>
+    <div class="home-sub">Tocá el botón para avisar que estás en la puerta</div>
+  </div>
+
+  <!-- Botón del timbre -->
+  <div class="bell-container" aria-label="Timbre">
+    <div class="ripple-ring"></div>
+    <div class="ripple-ring"></div>
+    <div class="ripple-ring"></div>
+    <button class="bell-btn" id="bellBtn" onclick="handleRing()" aria-label="Tocar timbre">
+      <span class="bell-icon">🔔</span>
+      <span class="bell-label">Tocar</span>
+    </button>
+  </div>
+
+  <!-- Hint GPS -->
+  <div class="geo-hint" id="geoHint">
+    📍 Este timbre usa tu ubicación GPS para verificar que estás en la puerta.
+    Cuando toques el botón, el navegador te pedirá permiso.
+  </div>
+
+  <!-- Estado / Feedback -->
+  <div class="status-card state-idle" id="statusCard">
+    <div class="status-text">Presioná el botón para tocar el timbre 👆</div>
+  </div>
+
+</main>
+
+<div class="footer">Timbre QR inteligente</div>
+
+<script>
+  // ──────────────────────────────────────────
+  // Estrellas de fondo animadas
+  // ──────────────────────────────────────────
+  (function initStars() {
+    const canvas = document.getElementById('starsCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createStar() {
+      return {
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.4 + 0.3,
+        opacity: 0,
+        targetOpacity: Math.random() * 0.5 + 0.1,
+        speed: (Math.random() * 0.008 + 0.003) * (Math.random() < 0.5 ? 1 : -1),
+      };
+    }
+
+    function init() {
+      resize();
+      stars = Array.from({ length: 120 }, createStar);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of stars) {
+        s.opacity += s.speed;
+        if (s.opacity >= s.targetOpacity) { s.speed = -Math.abs(s.speed); }
+        if (s.opacity <= 0) {
+          Object.assign(s, createStar());
+          s.opacity = 0;
+        }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${Math.max(0, s.opacity)})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    init();
+    draw();
+  })();
+
+  // ──────────────────────────────────────────
+  // Cargar nombre del hogar desde el servidor
+  // ──────────────────────────────────────────
+  fetch('/status')
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('homeName').textContent = data.homeName || 'Mi Casa';
+      document.title = '🔔 ' + (data.homeName || 'Timbre');
+    })
+    .catch(() => {
+      document.getElementById('homeName').textContent = 'Mi Casa';
+    });
+
+  // ──────────────────────────────────────────
+  // Estado UI
+  // ──────────────────────────────────────────
+  const card = document.getElementById('statusCard');
+  const btn  = document.getElementById('bellBtn');
+  const hint = document.getElementById('geoHint');
+  let busy = false;
+
+  function setStatus(state, icon, html) {
+    card.className = `status-card state-${state}`;
+    card.innerHTML = `
+      <div class="status-icon">${icon}</div>
+      <div class="status-text">${html}</div>
+    `;
+  }
+
+  function setLoading(msg) {
+    card.className = 'status-card state-loading';
+    card.innerHTML = `
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="status-text">${msg}</div>
+    `;
+  }
+
+  // ──────────────────────────────────────────
+  // Flujo principal: tocar el timbre
+  // ──────────────────────────────────────────
+  async function handleRing() {
+    if (busy) return;
+    busy = true;
+    btn.disabled = true;
+    hint.style.display = 'none';
+
+    // Efecto visual en el botón
+    btn.classList.add('ringing');
+    setTimeout(() => btn.classList.remove('ringing'), 600);
+
+    // 1. Pedir ubicación GPS
+    setLoading('Obteniendo tu ubicación GPS...');
+
+    let position;
+    try {
+      position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        });
+      });
+    } catch (err) {
+      busy = false;
+      btn.disabled = false;
+
+      if (err.code === 1) { // PERMISSION_DENIED
+        setStatus('error', '🚫',
+          '<strong>Permiso de ubicación denegado</strong><br>' +
+          'Para usar el timbre, necesitás permitir el acceso a tu GPS en el navegador.'
+        );
+      } else if (err.code === 3) { // TIMEOUT
+        setStatus('error', '⏱️',
+          '<strong>Tiempo de espera agotado</strong><br>' +
+          'No se pudo obtener tu ubicación. Intentá de nuevo al aire libre.'
+        );
+      } else {
+        setStatus('error', '📍',
+          '<strong>No se pudo obtener la ubicación</strong><br>' +
+          'Asegurate de tener el GPS activado e intentá de nuevo.'
+        );
+      }
+      return;
+    }
+
+    const { latitude: lat, longitude: lng, accuracy } = position.coords;
+
+    // 2. Enviar al servidor
+    setLoading(`Verificando que estás en la puerta...<br><small>(precisión GPS: ±${Math.round(accuracy)}m)</small>`);
+
+    try {
+      const res = await fetch('/ring', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lat, lng })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // ✅ Éxito
+        setStatus('success', '✅',
+          `<strong>¡Notificación enviada!</strong><br>` +
+          `El dueño de casa ya sabe que estás en la puerta.`
+        );
+        // Vibración háptica si el navegador lo soporta
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+        // Resetear después de 8 segundos
+        setTimeout(() => {
+          setStatus('idle', '', 'Presioná el botón para tocar el timbre 👆');
+          hint.style.display = '';
+          busy = false;
+          btn.disabled = false;
+        }, 8000);
+
+      } else if (res.status === 403 || data.code === 'TOO_FAR') {
+        // ❌ Demasiado lejos
+        setStatus('toofar', '🗺️',
+          `<strong>Estás demasiado lejos</strong><br>` +
+          `Distancia: <strong>${data.distance} metros</strong> de la puerta.<br>` +
+          `El timbre solo funciona desde la entrada (radio: ${data.allowedRadius}m).`
+        );
+        busy = false;
+        btn.disabled = false;
+
+      } else if (res.status === 429 || data.code === 'RATE_LIMIT') {
+        setStatus('error', '⏳',
+          '<strong>Esperá un momento</strong><br>' +
+          'Ya se envió una notificación hace poco. Esperá unos segundos.'
+        );
+        setTimeout(() => {
+          setStatus('idle', '', 'Presioná el botón para tocar el timbre 👆');
+          hint.style.display = '';
+          busy = false;
+          btn.disabled = false;
+        }, 5000);
+
+      } else {
+        setStatus('error', '⚠️',
+          `<strong>Error</strong><br>${data.error || 'Error desconocido. Intentá de nuevo.'}`
+        );
+        busy = false;
+        btn.disabled = false;
+      }
+    } catch (netErr) {
+      setStatus('error', '🌐',
+        '<strong>Sin conexión</strong><br>' +
+        'No se pudo conectar con el servidor. Verificá tu conexión a internet.'
+      );
+      busy = false;
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
