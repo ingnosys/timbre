@@ -71,9 +71,9 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 // FUNCIÓN: Texto del mensaje de notificación
 // ============================================================
 function buildMessage(distanceMeters) {
-  const now = new Date();
-  const hora = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-  const fecha = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const ahora = new Date();
+  const hora = ahora.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires', hour: '2-digit', minute: '2-digit' });
+  const fecha = ahora.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires',  weekday: 'long', day: 'numeric', month: 'long' });
   return { hora, fecha };
 }
 
@@ -94,8 +94,7 @@ async function sendWhatsAppNotification(distanceMeters) {
     `🔔 ¡Alguien está en la puerta!\n\n` +
     `🏠 ${CONFIG.HOME_NAME}\n` +
     `🕐 ${hora} — ${fecha}\n` +
-    `📍 A ${Math.round(distanceMeters)} metros de la puerta\n` +
-    `(Escaneó el QR del timbre)`;
+    `📍 A ${Math.round(distanceMeters)} metros de la puerta\n`;
 
   const params = new URLSearchParams({
     phone: CONFIG.WHATSAPP_PHONE,
