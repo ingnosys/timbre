@@ -13,8 +13,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 // CONFIGURACIÓN (desde .env)
 // ============================================================
 const CONFIG = {
-  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
   // WhatsApp via CallMeBot (gratis para uso personal)
   // Activación: enviar "I allow callmebot to send me messages" al +34 644 60 49 16
   WHATSAPP_PHONE: process.env.WHATSAPP_PHONE,    // Ej: '5491112345678' (código país sin +)
@@ -79,29 +77,6 @@ function buildMessage(distanceMeters) {
   return { hora, fecha };
 }
 
-// ============================================================
-// FUNCIÓN: Enviar notificación a Telegram
-// ============================================================
-async function sendTelegramNotification(distanceMeters) {
-  const url = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`;
-
-  const { hora, fecha } = buildMessage(distanceMeters);
-
-  const mensaje =
-    `🔔 *¡Alguien está en la puerta!*\n\n` +
-    `🏠 *${CONFIG.HOME_NAME}*\n` +
-    `🕐 ${hora} — ${fecha}\n` +
-    `📍 A ${Math.round(distanceMeters)} metros de la puerta\n\n` +
-    `_Escaneó el QR del timbre_`;
-
-  const response = await axios.post(url, {
-    chat_id: CONFIG.TELEGRAM_CHAT_ID,
-    text: mensaje,
-    parse_mode: 'Markdown'
-  });
-
-  return response.data.ok;
-}
 
 // ============================================================
 // FUNCIÓN: Enviar notificación a WhatsApp (CallMeBot - gratis)
@@ -173,44 +148,31 @@ app.post('/ring', ringLimiter, async (req, res) => {
   // Enviar notificaciones en paralelo (Telegram + WhatsApp)
   try {
     const [telegramSent, whatsappSent] = await Promise.allSettled([
-      sendTelegramNotification(distance),
       sendWhatsAppNotification(distance)
     ]);
 
-    const telegramOk = telegramSent.status === 'fulfilled' && telegramSent.value === true;
     const whatsappOk = whatsappSent.status === 'fulfilled' && whatsappSent.value === true;
 
-    if (telegramSent.status === 'rejected') {
-      console.error('[ERROR] Telegram:', telegramSent.reason?.message);
-    }
     if (whatsappSent.status === 'rejected') {
       console.error('[ERROR] WhatsApp:', whatsappSent.reason?.message);
     }
 
     // Considerar éxito si al menos UN canal funcionó
-    if (telegramOk || whatsappOk) {
-      lastRingTime = new Date();
-      ringCount++;
+    // Guardar en historial (máximo 10)
+    lastRings.unshift({
+      time: lastRingTime.toISOString(),
+      distance: Math.round(distance),
+      ip: req.ip
+    });
+    if (lastRings.length > 10) lastRings.pop();
 
-      // Guardar en historial (máximo 10)
-      lastRings.unshift({
-        time: lastRingTime.toISOString(),
-        distance: Math.round(distance),
-        ip: req.ip,
-        channels: { telegram: telegramOk, whatsapp: whatsappOk }
-      });
-      if (lastRings.length > 10) lastRings.pop();
-
-      console.log(`[OK] Notificación enviada | Telegram: ${telegramOk} | WhatsApp: ${whatsappOk} | Total: ${ringCount}`);
-      return res.json({
-        success: true,
-        message: '¡Notificación enviada! El dueño de casa ya sabe que estás en la puerta.',
-        distance: Math.round(distance),
-        channels: { telegram: telegramOk, whatsapp: whatsappOk }
-      });
-    } else {
-      throw new Error('Ningún canal de notificación funcionó');
-    }
+    console.log(`[OK] Notificación enviada | WhatsApp: ${whatsappOk} | Total: ${ringCount}`);
+    return res.json({
+      success: true,
+      message: '¡Notificación enviada! El dueño de casa ya sabe que estás en la puerta.',
+      distance: Math.round(distance),
+      channels: { whatsapp: whatsappOk }
+    });
   } catch (err) {
     console.error('[ERROR] Notificación:', err.message);
     return res.status(500).json({
@@ -232,7 +194,6 @@ app.get('/status', (req, res) => {
     lastRingTime,
     lastRings,
     serverUrl: CONFIG.SERVER_URL,
-    telegramConfigured: !!CONFIG.TELEGRAM_BOT_TOKEN && CONFIG.TELEGRAM_BOT_TOKEN !== '1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi',
     whatsappConfigured: !!CONFIG.WHATSAPP_PHONE && !!CONFIG.WHATSAPP_APIKEY
   });
 });
@@ -293,18 +254,12 @@ app.listen(CONFIG.PORT, () => {
   console.log(`🔗 Página visitante: http://localhost:${CONFIG.PORT}/`);
   console.log(`\n⚠️  URL pública configurada: ${CONFIG.SERVER_URL}`);
 
-  if (!CONFIG.TELEGRAM_BOT_TOKEN || CONFIG.TELEGRAM_BOT_TOKEN.includes('ABCDEF')) {
-    console.log('\n⚠️  Telegram: no configurado (editá .env)');
-  } else {
-    console.log('\n✅ Telegram configurado correctamente.');
-  }
-
   if (!CONFIG.WHATSAPP_PHONE || !CONFIG.WHATSAPP_APIKEY) {
     console.log('⚠️  WhatsApp: no configurado (opcional)');
     console.log('    Para activarlo: enviar "I allow callmebot to send me messages"');
     console.log('    al número +34 644 60 49 16 en WhatsApp, luego agregá al .env:');
-    console.log('    WHATSAPP_PHONE=549XXXXXXXXXX');
-    console.log('    WHATSAPP_APIKEY=XXXXXXXX');
+    console.log('    WHATSAPP_PHONE=5495456981');
+    console.log('    WHATSAPP_APIKEY=6435685');
   } else {
     console.log('✅ WhatsApp (CallMeBot) configurado correctamente.');
   }
