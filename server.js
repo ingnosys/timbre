@@ -17,7 +17,7 @@ const CONFIG = {
   TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
   HOUSE_LAT: parseFloat(process.env.HOUSE_LAT || '-34.9132165'),
   HOUSE_LNG: parseFloat(process.env.HOUSE_LNG || '-57.9760482'),
-  ALLOWED_RADIUS: parseInt(process.env.ALLOWED_RADIUS_METERS || '100'),
+  ALLOWED_RADIUS: parseInt(process.env.ALLOWED_RADIUS_METERS || '100000'),
   PORT: parseInt(process.env.PORT || '3000'),
   SERVER_URL: process.env.SERVER_URL || 'http://localhost:3000',
   HOME_NAME: process.env.HOME_NAME || 'Mi Casa',
