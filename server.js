@@ -145,20 +145,23 @@ app.post('/ring', ringLimiter, async (req, res) => {
     });
   }
 
-  // Enviar notificaciones en paralelo (Telegram + WhatsApp)
+  // Enviar notificación WhatsApp
   try {
-    const [telegramSent, whatsappSent] = await Promise.allSettled([
+    const result = await Promise.allSettled([
       sendWhatsAppNotification(distance)
     ]);
 
+    const whatsappSent = result[0];
     const whatsappOk = whatsappSent.status === 'fulfilled' && whatsappSent.value === true;
 
     if (whatsappSent.status === 'rejected') {
       console.error('[ERROR] WhatsApp:', whatsappSent.reason?.message);
     }
 
-    // Considerar éxito si al menos UN canal funcionó
-    // Guardar en historial (máximo 10)
+    // Actualizar estado y historial
+    lastRingTime = new Date();
+    ringCount++;
+
     lastRings.unshift({
       time: lastRingTime.toISOString(),
       distance: Math.round(distance),
