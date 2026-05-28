@@ -82,19 +82,18 @@ function buildMessage(distanceMeters) {
 // FUNCIÓN: Enviar notificación a WhatsApp (CallMeBot - gratis)
 // Documentación: https://www.callmebot.com/blog/free-api-whatsapp-messages/
 // ============================================================
-async function sendWhatsAppNotification(distanceMeters) {
+async function sendWhatsAppNotification() {
   if (!CONFIG.WHATSAPP_PHONE || !CONFIG.WHATSAPP_APIKEY) {
     console.log('[WHATSAPP] No configurado, omitiendo.');
     return false;
   }
 
-  const { hora, fecha } = buildMessage(distanceMeters);
+  const { hora, fecha } = buildMessage();
 
   const mensaje =
     `🔔 ¡Alguien está en la puerta!\n\n` +
     `🏠 ${CONFIG.HOME_NAME}\n` +
-    `🕐 ${hora} — ${fecha}\n` +
-    `📍 A ${Math.round(distanceMeters)} metros de la puerta\n`;
+    `🕐 ${hora} — ${fecha}\n`;
 
   const params = new URLSearchParams({
     phone: CONFIG.WHATSAPP_PHONE,
@@ -117,37 +116,12 @@ async function sendWhatsAppNotification(distanceMeters) {
 
 // POST /ring — El visitante toca el timbre
 app.post('/ring', ringLimiter, async (req, res) => {
-  const { lat, lng } = req.body;
-
-  // Validar que se enviaron coordenadas
-  if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) {
-    return res.status(400).json({
-      success: false,
-      error: 'No se pudo obtener tu ubicación. Asegurate de permitir el acceso al GPS.',
-      code: 'NO_LOCATION'
-    });
-  }
-
-  // Calcular distancia
-  const distance = haversineDistance(CONFIG.HOUSE_LAT, CONFIG.HOUSE_LNG, lat, lng);
-  console.log(`[RING] Visitante a ${Math.round(distance)}m de la puerta | Coords: ${lat}, ${lng}`);
-
-  // Verificar si está dentro del radio permitido
-  if (distance > CONFIG.ALLOWED_RADIUS) {
-    console.log(`[BLOCKED] Demasiado lejos: ${Math.round(distance)}m > ${CONFIG.ALLOWED_RADIUS}m`);
-    return res.status(403).json({
-      success: false,
-      error: `Estás a ${Math.round(distance)} metros de la puerta. El timbre solo funciona desde la entrada.`,
-      distance: Math.round(distance),
-      allowedRadius: CONFIG.ALLOWED_RADIUS,
-      code: 'TOO_FAR'
-    });
-  }
+  console.log(`[RING] Timbre tocado por IP: ${req.ip}`);
 
   // Enviar notificación WhatsApp
   try {
     const result = await Promise.allSettled([
-      sendWhatsAppNotification(distance)
+      sendWhatsAppNotification()
     ]);
 
     const whatsappSent = result[0];
@@ -163,7 +137,6 @@ app.post('/ring', ringLimiter, async (req, res) => {
 
     lastRings.unshift({
       time: lastRingTime.toISOString(),
-      distance: Math.round(distance),
       ip: req.ip
     });
     if (lastRings.length > 10) lastRings.pop();
@@ -172,7 +145,6 @@ app.post('/ring', ringLimiter, async (req, res) => {
     return res.json({
       success: true,
       message: '¡Notificación enviada! El dueño de casa ya sabe que estás en la puerta.',
-      distance: Math.round(distance),
       channels: { whatsapp: whatsappOk }
     });
   } catch (err) {
