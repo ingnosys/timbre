@@ -231,14 +231,14 @@
     .history-dist { font-size: 0.78rem; color: var(--text-dim); }
     .history-empty { color: var(--text-dim); font-size: 0.88rem; text-align: center; padding: 1.5rem; }
 
-    /* Telegram config status */
-    .telegram-status {
+    /* WhatsApp config status */
+    .whatsapp-status {
       display: inline-flex; align-items: center; gap: 0.5rem;
       padding: 0.4rem 0.9rem; border-radius: 8px;
       font-size: 0.8rem; font-weight: 600;
     }
-    .telegram-status.ok   { background: rgba(0,230,118,0.1); color: var(--success); border: 1px solid rgba(0,230,118,0.25); }
-    .telegram-status.bad  { background: rgba(255,77,109,0.1); color: var(--danger);  border: 1px solid rgba(255,77,109,0.25); }
+    .whatsapp-status.ok   { background: rgba(0,230,118,0.1); color: var(--success); border: 1px solid rgba(0,230,118,0.25); }
+    .whatsapp-status.bad  { background: rgba(255,77,109,0.1); color: var(--danger);  border: 1px solid rgba(255,77,109,0.25); }
 
     /* Print styles */
     @media print {
@@ -305,9 +305,14 @@
         <div class="stat-sub" id="statLastRingSub"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">💬 Telegram</div>
-        <div id="telegramStatusEl" class="telegram-status bad">No configurado</div>
-        <div class="stat-sub" style="margin-top:0.5rem;" id="telegramSub"></div>
+        <div class="stat-label">📏 Radio permitido</div>
+        <div class="stat-value" id="statRadius">—</div>
+        <div class="stat-sub">metros alrededor de la puerta</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">💬 WhatsApp</div>
+        <div id="whatsappStatusEl" class="whatsapp-status bad">No configurado</div>
+        <div class="stat-sub" style="margin-top:0.5rem;" id="whatsappSub"></div>
       </div>
     </div>
 
@@ -348,6 +353,14 @@
             <input class="field-input" id="cfgHomeName" readonly />
           </div>
           <div class="field-group">
+            <label class="field-label">📍 Coordenadas (lat, lng)</label>
+            <input class="field-input" id="cfgCoords" readonly />
+          </div>
+          <div class="field-group">
+            <label class="field-label">📏 Radio permitido (metros)</label>
+            <input class="field-input" id="cfgRadius" readonly />
+          </div>
+          <div class="field-group">
             <label class="field-label">🔗 URL pública del servidor</label>
             <input class="field-input" id="cfgUrl" readonly />
           </div>
@@ -372,22 +385,29 @@
       <div class="card-title">📖 Cómo poner el timbre en funcionamiento</div>
       <div style="display:flex; flex-direction:column; gap:1rem; font-size:0.9rem; color: var(--text-dim); line-height:1.7;">
         <div>
-          <strong style="color:var(--text);">1. Configurá el archivo <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code></strong><br>
-          Completá tu token de Telegram y Chat ID.
+          <strong style="color:var(--text);">1. Activá WhatsApp con CallMeBot (una sola vez)</strong><br>
+          Guardá el número <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">+34 644 60 49 16</code> en tus contactos como "CallMeBot".
+          Enviá por WhatsApp el mensaje exacto: <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">I allow callmebot to send me messages</code>.
+          En minutos te responden con tu API key. Guardá tu número (ej: <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">5491112345678</code>) y la API key en el archivo <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code>.
         </div>
         <div>
-          <strong style="color:var(--text);">2. Exponé el servidor a internet con ngrok</strong><br>
+          <strong style="color:var(--text);">2. Configurá las coordenadas de tu puerta</strong><br>
+          Completá <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">HOUSE_LAT</code> y <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">HOUSE_LNG</code> en el <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code>.
+          Podés obtenerlas desde Google Maps (clic derecho sobre tu puerta → copiar coordenadas).
+        </div>
+        <div>
+          <strong style="color:var(--text);">3. Exponé el servidor a internet con ngrok</strong><br>
           Instalá ngrok (<a href="https://ngrok.com" target="_blank" style="color:var(--teal);">ngrok.com</a>), ejecutá
           <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">ngrok http 3000</code>
           y copiá la URL HTTPS que te da. Actualizá <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">SERVER_URL</code> en .env y reiniciá el servidor.
         </div>
         <div>
-          <strong style="color:var(--text);">3. Imprimí el QR</strong><br>
+          <strong style="color:var(--text);">4. Imprimí el QR</strong><br>
           Descargá o imprimí el QR de arriba. Pegalo en la puerta de tu casa (podés plastificarlo o usar una etiqueta adhesiva resistente a la lluvia).
         </div>
         <div>
-          <strong style="color:var(--text);">4. ¡Listo!</strong><br>
-          Cuando alguien escanee el QR con su celular, el sistema te enviará una notificación por Telegram.
+          <strong style="color:var(--text);">5. ¡Listo!</strong><br>
+          Cuando alguien escanee el QR con su celular, el sistema verificará que esté dentro del radio permitido y te enviará una notificación por WhatsApp.
         </div>
       </div>
     </div>
@@ -414,6 +434,7 @@
 
       // Stats
       document.getElementById('statRingCount').textContent = statusData.ringCount || '0';
+      document.getElementById('statRadius').textContent = statusData.allowedRadius;
 
       if (statusData.lastRingTime) {
         const d = new Date(statusData.lastRingTime);
@@ -426,20 +447,23 @@
         document.getElementById('statLastRingSub').textContent = 'Aún no se tocó el timbre';
       }
 
-      // Telegram
-      const teleEl = document.getElementById('telegramStatusEl');
-      if (statusData.telegramConfigured) {
-        teleEl.className = 'telegram-status ok';
-        teleEl.textContent = '✅ Configurado';
-        document.getElementById('telegramSub').textContent = `Chat ID: ${statusData.lastRings?.[0] ? 'activo' : 'listo'}`;
+      // WhatsApp
+      const waEl = document.getElementById('whatsappStatusEl');
+      if (statusData.whatsappConfigured) {
+        waEl.className = 'whatsapp-status ok';
+        waEl.textContent = '✅ Configurado';
+        document.getElementById('whatsappSub').textContent = `Número: ${statusData.lastRings?.[0] ? 'activo' : 'listo'}`;
       } else {
-        teleEl.className = 'telegram-status bad';
-        teleEl.textContent = '⛔ Sin configurar';
-        document.getElementById('telegramSub').textContent = 'Editá el .env con tu token';
+        waEl.className = 'whatsapp-status bad';
+        waEl.textContent = '⛔ Sin configurar';
+        document.getElementById('whatsappSub').textContent = 'Editá WHATSAPP_PHONE y WHATSAPP_APIKEY en .env';
       }
 
       // Config
       document.getElementById('cfgHomeName').value = statusData.homeName;
+      document.getElementById('cfgCoords').value =
+        `${statusData.houseCoords.lat}, ${statusData.houseCoords.lng}`;
+      document.getElementById('cfgRadius').value = statusData.allowedRadius + ' m';
       document.getElementById('cfgUrl').value = statusData.serverUrl;
       qrUrl = statusData.serverUrl + '/';
       document.getElementById('qrUrl').textContent = qrUrl;
@@ -469,6 +493,7 @@
           <span class="history-icon">🔔</span>
           <div class="history-info">
             <div class="history-time">${hora} — ${fecha}</div>
+            <div class="history-dist">📍 A ${r.distance}m de la puerta</div>
           </div>
         </div>
       `;
