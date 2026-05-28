@@ -271,12 +271,6 @@
     </button>
   </div>
 
-  <!-- Hint GPS -->
-  <div class="geo-hint" id="geoHint">
-    📍 Este timbre usa tu ubicación GPS para verificar que estás en la puerta.
-    Cuando toques el botón, el navegador te pedirá permiso.
-  </div>
-
   <!-- Estado / Feedback -->
   <div class="status-card state-idle" id="statusCard">
     <div class="status-text">Presioná el botón para tocar el timbre 👆</div>
@@ -356,7 +350,6 @@
   // ──────────────────────────────────────────
   const card = document.getElementById('statusCard');
   const btn  = document.getElementById('bellBtn');
-  const hint = document.getElementById('geoHint');
   let busy = false;
 
   function setStatus(state, icon, html) {
@@ -382,57 +375,18 @@
     if (busy) return;
     busy = true;
     btn.disabled = true;
-    hint.style.display = 'none';
 
     // Efecto visual en el botón
     btn.classList.add('ringing');
     setTimeout(() => btn.classList.remove('ringing'), 600);
 
-    // 1. Pedir ubicación GPS
-    setLoading('Obteniendo tu ubicación GPS...');
-
-    let position;
-    try {
-      position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 0
-        });
-      });
-    } catch (err) {
-      busy = false;
-      btn.disabled = false;
-
-      if (err.code === 1) { // PERMISSION_DENIED
-        setStatus('error', '🚫',
-          '<strong>Permiso de ubicación denegado</strong><br>' +
-          'Para usar el timbre, necesitás permitir el acceso a tu GPS en el navegador.'
-        );
-      } else if (err.code === 3) { // TIMEOUT
-        setStatus('error', '⏱️',
-          '<strong>Tiempo de espera agotado</strong><br>' +
-          'No se pudo obtener tu ubicación. Intentá de nuevo al aire libre.'
-        );
-      } else {
-        setStatus('error', '📍',
-          '<strong>No se pudo obtener la ubicación</strong><br>' +
-          'Asegurate de tener el GPS activado e intentá de nuevo.'
-        );
-      }
-      return;
-    }
-
-    const { latitude: lat, longitude: lng, accuracy } = position.coords;
-
-    // 2. Enviar al servidor
-    setLoading(`Verificando que estás en la puerta...<br><small>(precisión GPS: ±${Math.round(accuracy)}m)</small>`);
+    setLoading('Tocando el timbre...');
 
     try {
       const res = await fetch('/ring', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ lat, lng })
+        body: JSON.stringify({})
       });
 
       const data = await res.json();
@@ -449,20 +403,9 @@
         // Resetear después de 8 segundos
         setTimeout(() => {
           setStatus('idle', '', 'Presioná el botón para tocar el timbre 👆');
-          hint.style.display = '';
           busy = false;
           btn.disabled = false;
         }, 8000);
-
-      } else if (res.status === 403 || data.code === 'TOO_FAR') {
-        // ❌ Demasiado lejos
-        setStatus('toofar', '🗺️',
-          `<strong>Estás demasiado lejos</strong><br>` +
-          `Distancia: <strong>${data.distance} metros</strong> de la puerta.<br>` +
-          `El timbre solo funciona desde la entrada (radio: ${data.allowedRadius}m).`
-        );
-        busy = false;
-        btn.disabled = false;
 
       } else if (res.status === 429 || data.code === 'RATE_LIMIT') {
         setStatus('error', '⏳',
@@ -471,7 +414,6 @@
         );
         setTimeout(() => {
           setStatus('idle', '', 'Presioná el botón para tocar el timbre 👆');
-          hint.style.display = '';
           busy = false;
           btn.disabled = false;
         }, 5000);
