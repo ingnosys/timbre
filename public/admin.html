@@ -513,6 +513,11 @@
         <div id="telegramStatusEl" class="telegram-status bad">No configurado</div>
         <div class="stat-sub" style="margin-top:0.5rem;" id="telegramSub"></div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">🟢 WhatsApp</div>
+        <div id="whatsappStatusEl" class="telegram-status bad">No configurado</div>
+        <div class="stat-sub" style="margin-top:0.5rem;" id="whatsappSub"></div>
+      </div>
     </div>
 
     <!-- QR + Config -->
@@ -594,7 +599,7 @@
       <div style="display:flex; flex-direction:column; gap:1rem; font-size:0.9rem; color: var(--text-dim); line-height:1.7;">
         <div>
           <strong style="color:var(--text);">1. Configurá el archivo <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code></strong><br>
-          Completá tu token de Telegram, Chat ID y las coordenadas exactas de tu puerta.
+          Completá tus credenciales de Telegram y/o WhatsApp y las coordenadas exactas de tu puerta.
           Podés obtener las coordenadas desde Google Maps (clic derecho → copiar coordenadas).
         </div>
         <div>
@@ -609,7 +614,7 @@
         </div>
         <div>
           <strong style="color:var(--text);">4. ¡Listo!</strong><br>
-          Cuando alguien escanee el QR con su celular, el sistema verificará que esté dentro del radio permitido y te enviará una notificación por Telegram.
+          Cuando alguien escanee el QR con su celular, el sistema verificará que esté dentro del radio permitido y te enviará una notificación por Telegram y/o WhatsApp.
         </div>
       </div>
     </div>
@@ -733,6 +738,18 @@
         teleEl.className = 'telegram-status bad';
         teleEl.textContent = '⛔ Sin configurar';
         document.getElementById('telegramSub').textContent = 'Editá el .env con tu token';
+      }
+
+      // WhatsApp
+      const waEl = document.getElementById('whatsappStatusEl');
+      if (statusData.whatsappConfigured) {
+        waEl.className = 'telegram-status ok';
+        waEl.textContent = '✅ Configurado';
+        document.getElementById('whatsappSub').textContent = 'Listo para enviar';
+      } else {
+        waEl.className = 'telegram-status bad';
+        waEl.textContent = '⛔ Sin configurar';
+        document.getElementById('whatsappSub').textContent = 'Editá el .env con tus datos';
       }
 
       // Config

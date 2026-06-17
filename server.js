@@ -49,6 +49,8 @@ function saveGpsConfig() {
 const CONFIG = {
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
   TELEGRAM_CHAT_ID:   process.env.TELEGRAM_CHAT_ID,
+  WHATSAPP_PHONE:     process.env.WHATSAPP_PHONE,
+  WHATSAPP_APIKEY:    process.env.WHATSAPP_APIKEY,
   HOUSE_LAT:          parseFloat(process.env.HOUSE_LAT   || '-34.6037'),
   HOUSE_LNG:          parseFloat(process.env.HOUSE_LNG   || '-58.3816'),
   ALLOWED_RADIUS:     parseInt(process.env.ALLOWED_RADIUS_METERS || '100'),
@@ -100,11 +102,75 @@ function haversineDistance(lat1, lng1, lat2, lng2) {
 }
 
 // ============================================================
+// FUNCIONES AUXILIARES DE ESCAPADO Y CONFIGURACIÓN
+// ============================================================
+function escapeHtml(text) {
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function isTelegramConfigured() {
+  const token = CONFIG.TELEGRAM_BOT_TOKEN;
+  const chatId = CONFIG.TELEGRAM_CHAT_ID;
+  if (!token || token === '1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi' || token.includes('REEMPLAZAR_CON')) {
+    return false;
+  }
+  if (!chatId || chatId === '123456789' || chatId.includes('REEMPLAZAR_CON')) {
+    return false;
+  }
+  return true;
+}
+
+function isWhatsAppConfigured() {
+  const phone = CONFIG.WHATSAPP_PHONE;
+  const apikey = CONFIG.WHATSAPP_APIKEY;
+  if (!phone || phone === '5495456981' || phone.includes('REEMPLAZAR')) return false;
+  if (!apikey || apikey === '6435685' || apikey.includes('REEMPLAZAR')) return false;
+  return true;
+}
+
+// ============================================================
 // FUNCIÓN: Enviar notificación a Telegram
 // ============================================================
 async function sendTelegramNotification(distanceMeters, ringId) {
   const url = `https://api.telegram.org/bot${CONFIG.TELEGRAM_BOT_TOKEN}/sendMessage`;
 
+  const now = new Date();
+  const hora = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  const fecha = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+  const intercomUrl = `${CONFIG.SERVER_URL}/admin.html?ringId=${ringId}`;
+
+  const distLabel = (distanceMeters !== null && distanceMeters !== undefined)
+    ? `📍 A ${Math.round(distanceMeters)} metros de la puerta`
+    : `📍 Ubicación: GPS Desactivado`;
+
+  const cleanHomeName = escapeHtml(CONFIG.HOME_NAME);
+
+  const mensaje =
+    `🔔 <b>¡Alguien está en la puerta!</b>\n\n` +
+    `🏠 <b>${cleanHomeName}</b>\n` +
+    `🕐 ${hora} — ${fecha}\n` +
+    `${distLabel}\n\n` +
+    `📞 <b>Intercomunicador con Video:</b>\n` +
+    `👉 <a href="${intercomUrl}">CONTESTAR LLAMADA</a>\n\n` +
+    `<i>Escaneó el QR del timbre</i>`;
+
+  const response = await axios.post(url, {
+    chat_id: CONFIG.TELEGRAM_CHAT_ID,
+    text: mensaje,
+    parse_mode: 'HTML'
+  });
+
+  return response.data.ok;
+}
+
+// ============================================================
+// FUNCIÓN: Enviar notificación a WhatsApp (CallMeBot)
+// ============================================================
+async function sendWhatsAppNotification(distanceMeters, ringId) {
   const now = new Date();
   const hora = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
   const fecha = now.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -120,16 +186,21 @@ async function sendTelegramNotification(distanceMeters, ringId) {
     `🕐 ${hora} — ${fecha}\n` +
     `${distLabel}\n\n` +
     `📞 *Intercomunicador con Video:*\n` +
-    `👉 [CONTESTAR LLAMADA](${intercomUrl})\n\n` +
+    `👉 ${intercomUrl}\n\n` +
     `_Escaneó el QR del timbre_`;
 
-  const response = await axios.post(url, {
-    chat_id: CONFIG.TELEGRAM_CHAT_ID,
+  const params = new URLSearchParams({
+    phone: CONFIG.WHATSAPP_PHONE,
     text: mensaje,
-    parse_mode: 'Markdown'
+    apikey: CONFIG.WHATSAPP_APIKEY
   });
 
-  return response.data.ok;
+  const url = `https://api.callmebot.com/whatsapp.php?${params.toString()}`;
+  const response = await axios.get(url, { timeout: 10000 });
+
+  const success = response.status === 200;
+  console.log(`[WHATSAPP] Respuesta CallMeBot: ${response.status} — ${String(response.data).substring(0, 80)}`);
+  return success;
 }
 
 // ============================================================
@@ -140,6 +211,19 @@ async function sendTelegramNotification(distanceMeters, ringId) {
 app.post('/ring', ringLimiter, async (req, res) => {
   const { lat, lng } = req.body;
   let distance = null;
+
+  const telegramActive = isTelegramConfigured();
+  const whatsappActive = isWhatsAppConfigured();
+
+  // Verificar configuración de notificaciones antes de procesar
+  if (!telegramActive && !whatsappActive) {
+    console.error('[ERROR] Intento de usar el timbre sin configurar Telegram ni WhatsApp. Revisa el archivo .env.');
+    return res.status(500).json({
+      success: false,
+      error: 'El servicio de notificaciones no está configurado (debes configurar al menos Telegram o WhatsApp en el servidor).',
+      code: 'NOTIFICATIONS_UNCONFIGURED'
+    });
+  }
 
   // Validar que se enviaron coordenadas (solo si GPS está activado)
   if (gpsEnabled) {
@@ -173,11 +257,39 @@ app.post('/ring', ringLimiter, async (req, res) => {
   // Generar ID único para la llamada
   const ringId = `ring_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-  // Enviar notificación Telegram
+  // Enviar notificaciones configuradas en paralelo
   try {
-    const sent = await sendTelegramNotification(distance, ringId);
+    const promises = [];
+    if (telegramActive) {
+      promises.push(sendTelegramNotification(distance, ringId).then(ok => ({ channel: 'telegram', ok })));
+    }
+    if (whatsappActive) {
+      promises.push(sendWhatsAppNotification(distance, ringId).then(ok => ({ channel: 'whatsapp', ok })));
+    }
 
-    if (sent) {
+    const results = await Promise.allSettled(promises);
+    let anySent = false;
+    const channelsStatus = {};
+
+    results.forEach((result, idx) => {
+      const activeChannel = telegramActive && whatsappActive ? (idx === 0 ? 'telegram' : 'whatsapp') : (telegramActive ? 'telegram' : 'whatsapp');
+      if (result.status === 'fulfilled') {
+        channelsStatus[result.value.channel] = result.value.ok;
+        if (result.value.ok) {
+          anySent = true;
+        } else {
+          console.error(`[ERROR] El canal ${result.value.channel} retornó success: false`);
+        }
+      } else {
+        channelsStatus[activeChannel] = false;
+        console.error(`[ERROR] Falla en canal ${activeChannel}:`, result.reason?.message || result.reason);
+        if (result.reason?.response?.data) {
+          console.error(`[ERROR] ${activeChannel} API Response:`, JSON.stringify(result.reason.response.data));
+        }
+      }
+    });
+
+    if (anySent) {
       lastRingTime = new Date();
       ringCount++;
 
@@ -197,22 +309,23 @@ app.post('/ring', ringLimiter, async (req, res) => {
         distance: distance !== null ? Math.round(distance) : null
       });
 
-      console.log(`[OK] Notificación enviada. Total: ${ringCount} | ringId: ${ringId}`);
+      console.log(`[OK] Notificaciones enviadas. Canales:`, channelsStatus, `| Total: ${ringCount} | ringId: ${ringId}`);
       return res.json({
         success: true,
         message: '¡Notificación enviada! El dueño de casa ya sabe que estás en la puerta.',
         distance: distance !== null ? Math.round(distance) : null,
-        ringId: ringId
+        ringId: ringId,
+        channels: channelsStatus
       });
     } else {
-      throw new Error('Telegram API retornó ok: false');
+      throw new Error('Todos los canales de notificación configurados fallaron.');
     }
   } catch (err) {
-    console.error('[ERROR] Telegram:', err.message);
+    console.error('[ERROR] Envío de notificaciones:', err.message);
     return res.status(500).json({
       success: false,
       error: 'Hubo un error enviando la notificación. Intentá de nuevo.',
-      code: 'TELEGRAM_ERROR'
+      code: 'NOTIFICATION_ERROR'
     });
   }
 });
@@ -228,7 +341,8 @@ app.get('/status', (req, res) => {
     lastRingTime,
     lastRings,
     serverUrl: CONFIG.SERVER_URL,
-    telegramConfigured: !!CONFIG.TELEGRAM_BOT_TOKEN && CONFIG.TELEGRAM_BOT_TOKEN !== '1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi',
+    telegramConfigured: isTelegramConfigured(),
+    whatsappConfigured: isWhatsAppConfigured(),
     gpsEnabled
   });
 });
@@ -346,11 +460,15 @@ server.listen(CONFIG.PORT, () => {
   console.log(`🔗 Página visitante: http://localhost:${CONFIG.PORT}/`);
   console.log(`\n⚠️  URL pública configurada: ${CONFIG.SERVER_URL}`);
 
-  if (!CONFIG.TELEGRAM_BOT_TOKEN || CONFIG.TELEGRAM_BOT_TOKEN.includes('ABCDEF')) {
-    console.log('\n⛔  ADVERTENCIA: Token de Telegram no configurado.');
-    console.log('    Editá el archivo .env con tu token real.');
+  const telegramConfigured = isTelegramConfigured();
+  const whatsappConfigured = isWhatsAppConfigured();
+
+  if (!telegramConfigured && !whatsappConfigured) {
+    console.log('\n⛔  ADVERTENCIA: Ni Telegram ni WhatsApp están configurados o sus credenciales están incompletas.');
+    console.log('    Editá el archivo .env (o las variables de entorno en Render) con tus credenciales reales.');
   } else {
-    console.log('\n✅ Telegram configurado correctamente.');
+    if (telegramConfigured) console.log('\n✅ Telegram configurado correctamente.');
+    if (whatsappConfigured) console.log(`\n✅ WhatsApp (CallMeBot) configurado correctamente. Teléfono: ${CONFIG.WHATSAPP_PHONE}`);
   }
   console.log('\n' + '─'.repeat(44) + '\n');
 });
