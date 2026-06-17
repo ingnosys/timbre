@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🔔 Timbre QR — Panel de Administración</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:       #0d0d1a;
-      --surface:  #13132a;
-      --card:     #1a1a35;
-      --border:   rgba(255,255,255,0.08);
-      --gold:     #f5c518;
-      --teal:     #00d4b1;
-      --success:  #00e676;
-      --danger:   #ff4d6d;
-      --warning:  #ff8c42;
-      --text:     #ffffff;
-      --text-dim: rgba(255,255,255,0.55);
-      --accent:   #7c3aed;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-    html, body {
+    :root {
+      --bg: #0d0d1a;
+      --surface: #13132a;
+      --card: #1a1a35;
+      --border: rgba(255, 255, 255, 0.08);
+      --gold: #f5c518;
+      --teal: #00d4b1;
+      --success: #00e676;
+      --danger: #ff4d6d;
+      --warning: #ff8c42;
+      --text: #ffffff;
+      --text-dim: rgba(255, 255, 255, 0.55);
+      --accent: #7c3aed;
+    }
+
+    html,
+    body {
       min-height: 100vh;
       font-family: 'Outfit', sans-serif;
       background: var(--bg);
@@ -33,7 +42,11 @@
     }
 
     /* Sidebar */
-    .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
 
     .sidebar {
       background: var(--surface);
@@ -43,16 +56,35 @@
       flex-direction: column;
       gap: 0.5rem;
     }
+
     .sidebar-logo {
-      display: flex; align-items: center; gap: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
       margin-bottom: 2rem;
     }
-    .sidebar-logo .icon { font-size: 2rem; }
-    .sidebar-logo .brand { font-size: 1.1rem; font-weight: 700; line-height: 1.2; }
-    .sidebar-logo .brand small { display: block; font-size: 0.72rem; color: var(--text-dim); font-weight: 400; }
+
+    .sidebar-logo .icon {
+      font-size: 2rem;
+    }
+
+    .sidebar-logo .brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .sidebar-logo .brand small {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
 
     .nav-item {
-      display: flex; align-items: center; gap: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
       padding: 0.7rem 1rem;
       border-radius: 10px;
       cursor: pointer;
@@ -62,13 +94,30 @@
       transition: all 0.2s;
       text-decoration: none;
     }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-    .nav-item.active { background: rgba(124,58,237,0.2); color: var(--accent); border: 1px solid rgba(124,58,237,0.3); }
-    .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    .nav-icon {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
 
     .sidebar-section-title {
-      font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px;
-      text-transform: uppercase; color: var(--text-dim);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
       padding: 1.2rem 1rem 0.4rem;
     }
 
@@ -81,47 +130,120 @@
       overflow-y: auto;
     }
 
-    .page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .page-title { font-size: 1.8rem; font-weight: 800; }
-    .page-title span { color: var(--gold); }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .page-title span {
+      color: var(--gold);
+    }
+
     .status-pill {
-      display: inline-flex; align-items: center; gap: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       padding: 0.4rem 1rem;
       border-radius: 999px;
-      font-size: 0.82rem; font-weight: 600;
-      background: rgba(0,230,118,0.12);
-      border: 1px solid rgba(0,230,118,0.3);
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: rgba(0, 230, 118, 0.12);
+      border: 1px solid rgba(0, 230, 118, 0.3);
       color: var(--success);
     }
+
     .status-pill .dot {
-      width: 8px; height: 8px; border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
       background: var(--success);
       animation: pulse-dot 2s ease-in-out infinite;
     }
+
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
     }
-    .status-pill.offline { background: rgba(255,77,109,0.12); border-color: rgba(255,77,109,0.3); color: var(--danger); }
-    .status-pill.offline .dot { background: var(--danger); }
+
+    .status-pill.offline {
+      background: rgba(255, 77, 109, 0.12);
+      border-color: rgba(255, 77, 109, 0.3);
+      color: var(--danger);
+    }
+
+    .status-pill.offline .dot {
+      background: var(--danger);
+    }
 
     /* Stats row */
-    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 1.2rem 1.4rem;
     }
-    .stat-label { font-size: 0.78rem; color: var(--text-dim); font-weight: 500; margin-bottom: 0.5rem; }
-    .stat-value { font-size: 2rem; font-weight: 800; }
-    .stat-value.gold { color: var(--gold); }
-    .stat-value.teal { color: var(--teal); }
-    .stat-sub { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.2rem; }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .stat-value.gold {
+      color: var(--gold);
+    }
+
+    .stat-value.teal {
+      color: var(--teal);
+    }
+
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 0.2rem;
+    }
 
     /* QR Section */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .card {
       background: var(--card);
@@ -129,65 +251,123 @@
       border-radius: 16px;
       padding: 1.8rem;
     }
+
     .card-title {
-      font-size: 1.05rem; font-weight: 700; margin-bottom: 1.4rem;
-      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
+
     .card-title .badge {
-      font-size: 0.68rem; font-weight: 600; letter-spacing: 1px;
-      padding: 0.2rem 0.6rem; border-radius: 6px;
-      background: rgba(124,58,237,0.2); color: #a78bfa;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(124, 58, 237, 0.2);
+      color: #a78bfa;
       text-transform: uppercase;
     }
 
     /* QR */
     .qr-wrapper {
-      display: flex; flex-direction: column; align-items: center; gap: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
     }
+
     .qr-frame {
       background: #fff;
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 0 40px rgba(245,197,24,0.25);
+      box-shadow: 0 0 40px rgba(245, 197, 24, 0.25);
       position: relative;
     }
-    .qr-frame img { display: block; width: 220px; height: 220px; }
+
+    .qr-frame img {
+      display: block;
+      width: 220px;
+      height: 220px;
+    }
+
     .qr-url {
-      font-size: 0.78rem; color: var(--text-dim);
-      text-align: center; word-break: break-all;
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      text-align: center;
+      word-break: break-all;
       max-width: 260px;
     }
-    .btn-row { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+
+    .btn-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     .btn {
-      padding: 0.7rem 1.4rem; border-radius: 10px;
+      padding: 0.7rem 1.4rem;
+      border-radius: 10px;
       font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem; font-weight: 600;
-      cursor: pointer; border: none;
-      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       transition: all 0.2s;
     }
+
     .btn-primary {
       background: linear-gradient(135deg, var(--accent), #9f67ff);
       color: white;
-      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.5); }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+    }
+
     .btn-ghost {
-      background: rgba(255,255,255,0.07);
+      background: rgba(255, 255, 255, 0.07);
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-ghost:hover { background: rgba(255,255,255,0.12); }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
 
     /* Config card */
-    .config-row { display: flex; flex-direction: column; gap: 1rem; }
-    .field-group { display: flex; flex-direction: column; gap: 0.5rem; }
-    .field-label {
-      font-size: 0.8rem; font-weight: 600; color: var(--text-dim);
-      display: flex; align-items: center; gap: 0.5rem;
+    .config-row {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     .field-input {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.7rem 1rem;
@@ -197,68 +377,135 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .field-input:focus { border-color: var(--accent); }
-    .field-input[readonly] { color: var(--text-dim); cursor: default; }
+
+    .field-input:focus {
+      border-color: var(--accent);
+    }
+
+    .field-input[readonly] {
+      color: var(--text-dim);
+      cursor: default;
+    }
 
     .env-hint {
-      background: rgba(245,197,24,0.07);
-      border: 1px solid rgba(245,197,24,0.2);
+      background: rgba(245, 197, 24, 0.07);
+      border: 1px solid rgba(245, 197, 24, 0.2);
       border-radius: 10px;
       padding: 0.8rem 1rem;
       font-size: 0.82rem;
-      color: rgba(255,255,255,0.6);
+      color: rgba(255, 255, 255, 0.6);
       line-height: 1.6;
     }
+
     .env-hint code {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       padding: 0.1em 0.4em;
       border-radius: 4px;
       font-size: 0.9em;
     }
 
     /* History */
-    .history-list { display: flex; flex-direction: column; gap: 0.7rem; }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
     .history-item {
-      display: flex; align-items: center; gap: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
       padding: 0.8rem 1rem;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: 10px;
     }
-    .history-icon { font-size: 1.2rem; }
-    .history-info { flex: 1; }
-    .history-time { font-size: 0.85rem; font-weight: 600; }
-    .history-dist { font-size: 0.78rem; color: var(--text-dim); }
-    .history-empty { color: var(--text-dim); font-size: 0.88rem; text-align: center; padding: 1.5rem; }
+
+    .history-icon {
+      font-size: 1.2rem;
+    }
+
+    .history-info {
+      flex: 1;
+    }
+
+    .history-time {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .history-dist {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+
+    .history-empty {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 1.5rem;
+    }
 
     /* Telegram config status */
     .telegram-status {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.4rem 0.9rem; border-radius: 8px;
-      font-size: 0.8rem; font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
     }
-    .telegram-status.ok   { background: rgba(0,230,118,0.1); color: var(--success); border: 1px solid rgba(0,230,118,0.25); }
-    .telegram-status.bad  { background: rgba(255,77,109,0.1); color: var(--danger);  border: 1px solid rgba(255,77,109,0.25); }
+
+    .telegram-status.ok {
+      background: rgba(0, 230, 118, 0.1);
+      color: var(--success);
+      border: 1px solid rgba(0, 230, 118, 0.25);
+    }
+
+    .telegram-status.bad {
+      background: rgba(255, 77, 109, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(255, 77, 109, 0.25);
+    }
 
     /* Print styles */
     @media print {
-      .sidebar, .page-header .status-pill, .btn-row .btn:not(.btn-print) { display: none !important; }
-      .layout { grid-template-columns: 1fr; }
-      .main { padding: 0; }
-      .grid-2 { grid-template-columns: 1fr; }
+
+      .sidebar,
+      .page-header .status-pill,
+      .btn-row .btn:not(.btn-print) {
+        display: none !important;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding: 0;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* Estilos Intercomunicador Admin */
     .intercom-overlay {
-      position: fixed; inset: 0; z-index: 10000;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
       background: rgba(10, 10, 26, 0.85);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 1.5rem;
       animation: fadeIn 0.4s ease-out;
     }
-    
+
     .intercom-window {
       background: #13132a;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -266,7 +513,7 @@
       width: 100%;
       max-width: 600px;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 40px rgba(124,58,237,0.15);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(124, 58, 237, 0.15);
       display: flex;
       flex-direction: column;
       animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -275,24 +522,38 @@
     .intercom-header {
       padding: 1.2rem 1.6rem;
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(255,255,255,0.02);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
     }
-    
+
     .intercom-title {
-      font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
     }
 
     .live-indicator {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      padding: 0.25rem 0.6rem; border-radius: 6px;
-      font-size: 0.72rem; font-weight: 700;
-      background: rgba(0,230,118,0.12); color: var(--success);
-      text-transform: uppercase; letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(0, 230, 118, 0.12);
+      color: var(--success);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .live-indicator .dot {
-      width: 6px; height: 6px; border-radius: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
       background: var(--success);
       animation: pulse-dot 1.5s infinite;
     }
@@ -306,56 +567,81 @@
     }
 
     .intercom-viewport video.remote {
-      width: 100%; height: 100%; object-fit: cover;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .intercom-viewport video.local {
-      position: absolute; bottom: 16px; right: 16px;
-      width: 110px; height: 150px;
-      border-radius: 12px; border: 2px solid rgba(255,255,255,0.25);
-      object-fit: cover; transform: scaleX(-1);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      background: #000; z-index: 10;
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 110px;
+      height: 150px;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      object-fit: cover;
+      transform: scaleX(-1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      background: #000;
+      z-index: 10;
     }
 
     .intercom-viewport .placeholder {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       gap: 1rem;
       background: radial-gradient(circle, #1a1a35 0%, #0d0d1a 100%);
     }
 
     .intercom-footer {
       padding: 1.5rem;
-      background: rgba(255,255,255,0.02);
+      background: rgba(255, 255, 255, 0.02);
       border-top: 1px solid var(--border);
-      display: flex; flex-direction: column; gap: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
     }
 
     .intercom-actions {
-      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
       width: 100%;
     }
 
     .control-row-admin {
-      display: flex; gap: 0.8rem;
+      display: flex;
+      gap: 0.8rem;
     }
 
     /* Modal de llamada entrante */
     .incoming-modal {
-      position: fixed; bottom: 24px; right: 24px; z-index: 10001;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10001;
       width: 320px;
       background: #13132a;
       border: 1px solid var(--accent);
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(124,58,237,0.3), 0 0 20px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3), 0 0 20px rgba(0, 0, 0, 0.5);
       padding: 1.2rem;
-      display: flex; flex-direction: column; gap: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
       animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .incoming-info {
-      display: flex; align-items: center; gap: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
     }
 
     .incoming-bell-ring {
@@ -365,11 +651,27 @@
     }
 
     @keyframes bell-ring-anim {
-      0%, 100% { transform: rotate(0deg); }
-      15% { transform: rotate(15deg); }
-      30% { transform: rotate(-15deg); }
-      45% { transform: rotate(10deg); }
-      60% { transform: rotate(-10deg); }
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      15% {
+        transform: rotate(15deg);
+      }
+
+      30% {
+        transform: rotate(-15deg);
+      }
+
+      45% {
+        transform: rotate(10deg);
+      }
+
+      60% {
+        transform: rotate(-10deg);
+      }
     }
 
     /* Botón especial abrir puerta */
@@ -377,30 +679,63 @@
       background: linear-gradient(135deg, var(--gold), #c49b10);
       color: #000;
       font-weight: 700;
-      box-shadow: 0 4px 15px rgba(245,197,24,0.3);
+      box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3);
       padding: 0.8rem 1.6rem;
       font-size: 0.92rem;
       border-radius: 12px;
-      border: none; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 0.6rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
       transition: all 0.2s ease-in-out;
     }
-    
+
     .btn-unlock:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 22px rgba(245,197,24,0.5);
+      box-shadow: 0 6px 22px rgba(245, 197, 24, 0.5);
       background: linear-gradient(135deg, #ffe066, var(--gold));
     }
 
     .btn-unlock.unlocked {
       background: linear-gradient(135deg, var(--success), #00b359) !important;
       color: #fff;
-      box-shadow: 0 4px 15px rgba(0,230,118,0.3);
+      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
     }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    @keyframes slideInUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
 
     /* Switch styling */
     .switch {
@@ -409,19 +744,25 @@
       width: 46px;
       height: 24px;
     }
+
     .switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
+
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255,255,255,0.1);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--border);
       transition: .4s;
     }
+
     .slider:before {
       position: absolute;
       content: "";
@@ -432,366 +773,390 @@
       background-color: var(--text-dim);
       transition: .4s;
     }
-    input:checked + .slider {
-      background-color: rgba(124,58,237,0.2);
+
+    input:checked+.slider {
+      background-color: rgba(124, 58, 237, 0.2);
       border-color: var(--accent);
     }
-    input:checked + .slider:before {
+
+    input:checked+.slider:before {
       background-color: var(--accent);
       transform: translateX(22px);
     }
+
     .slider.round {
       border-radius: 24px;
     }
+
     .slider.round:before {
       border-radius: 50%;
     }
   </style>
 </head>
+
 <body>
 
-<div class="layout">
+  <div class="layout">
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <span class="icon">🔔</span>
-      <div class="brand">
-        Timbre QR
-        <small>Panel de Admin</small>
-      </div>
-    </div>
-
-    <div class="sidebar-section-title">Navegación</div>
-    <a class="nav-item active" href="/admin.html">
-      <span class="nav-icon">📊</span> Dashboard
-    </a>
-    <a class="nav-item" href="/" target="_blank">
-      <span class="nav-icon">📱</span> Ver como visitante
-    </a>
-    <a class="nav-item" href="/qr" target="_blank">
-      <span class="nav-icon">🖨️</span> QR solo (imprimir)
-    </a>
-
-    <div class="sidebar-section-title" style="margin-top: auto;">Sistema</div>
-    <div style="font-size:0.78rem; color: var(--text-dim); padding: 0.5rem 1rem; line-height: 1.7;">
-      <div id="sidebarStatus">Conectando...</div>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="main">
-
-    <!-- Header -->
-    <div class="page-header">
-      <h1 class="page-title">Dashboard <span id="homeTitleBadge">—</span></h1>
-      <span class="status-pill" id="serverStatusPill">
-        <span class="dot"></span>
-        <span id="serverStatusText">Verificando...</span>
-      </span>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="stat-label">🔔 Total de llamadas</div>
-        <div class="stat-value gold" id="statRingCount">—</div>
-        <div class="stat-sub">desde que inició el servidor</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">🕐 Última llamada</div>
-        <div class="stat-value teal" style="font-size:1.2rem; line-height:1.4;" id="statLastRing">—</div>
-        <div class="stat-sub" id="statLastRingSub"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">📏 Radio permitido</div>
-        <div class="stat-value" id="statRadius">—</div>
-        <div class="stat-sub">metros alrededor de la puerta</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">💬 Telegram</div>
-        <div id="telegramStatusEl" class="telegram-status bad">No configurado</div>
-        <div class="stat-sub" style="margin-top:0.5rem;" id="telegramSub"></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">🟢 WhatsApp</div>
-        <div id="whatsappStatusEl" class="telegram-status bad">No configurado</div>
-        <div class="stat-sub" style="margin-top:0.5rem;" id="whatsappSub"></div>
-      </div>
-    </div>
-
-    <!-- QR + Config -->
-    <div class="grid-2">
-
-      <!-- QR Card -->
-      <div class="card">
-        <div class="card-title">
-          📱 Código QR
-          <span class="badge">Para imprimir</span>
-        </div>
-        <div class="qr-wrapper">
-          <div class="qr-frame">
-            <img id="qrImage" src="/qr" alt="QR del timbre" />
-          </div>
-          <div class="qr-url" id="qrUrl">Cargando URL...</div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="downloadQR()">
-              ⬇️ Descargar QR
-            </button>
-            <button class="btn btn-ghost" onclick="window.print()">
-              🖨️ Imprimir
-            </button>
-            <button class="btn btn-ghost" onclick="copyUrl()">
-              📋 Copiar URL
-            </button>
-          </div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="icon">🔔</span>
+        <div class="brand">
+          Timbre QR
+          <small>Panel de Admin</small>
         </div>
       </div>
 
-      <!-- Config Card -->
-      <div class="card">
-        <div class="card-title">⚙️ Configuración actual</div>
-        <div class="config-row">
-          <div class="field-group">
-            <label class="field-label">🏠 Nombre del hogar</label>
-            <input class="field-input" id="cfgHomeName" readonly />
+      <div class="sidebar-section-title">Navegación</div>
+      <a class="nav-item active" href="/admin.html">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a class="nav-item" href="/" target="_blank">
+        <span class="nav-icon">📱</span> Ver como visitante
+      </a>
+      <a class="nav-item" href="/qr" target="_blank">
+        <span class="nav-icon">🖨️</span> QR solo (imprimir)
+      </a>
+
+      <div class="sidebar-section-title" style="margin-top: auto;">Sistema</div>
+      <div style="font-size:0.78rem; color: var(--text-dim); padding: 0.5rem 1rem; line-height: 1.7;">
+        <div id="sidebarStatus">Conectando...</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- Header -->
+      <div class="page-header">
+        <h1 class="page-title">Dashboard <span id="homeTitleBadge">—</span></h1>
+        <span class="status-pill" id="serverStatusPill">
+          <span class="dot"></span>
+          <span id="serverStatusText">Verificando...</span>
+        </span>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">🔔 Total de llamadas</div>
+          <div class="stat-value gold" id="statRingCount">—</div>
+          <div class="stat-sub">desde que inició el servidor</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🕐 Última llamada</div>
+          <div class="stat-value teal" style="font-size:1.2rem; line-height:1.4;" id="statLastRing">—</div>
+          <div class="stat-sub" id="statLastRingSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">📏 Radio permitido</div>
+          <div class="stat-value" id="statRadius">—</div>
+          <div class="stat-sub">metros alrededor de la puerta</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">💬 Telegram</div>
+          <div id="telegramStatusEl" class="telegram-status bad">No configurado</div>
+          <div class="stat-sub" style="margin-top:0.5rem;" id="telegramSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🟢 WhatsApp</div>
+          <div id="whatsappStatusEl" class="telegram-status bad">No configurado</div>
+          <div class="stat-sub" style="margin-top:0.5rem;" id="whatsappSub"></div>
+        </div>
+      </div>
+
+      <!-- QR + Config -->
+      <div class="grid-2">
+
+        <!-- QR Card -->
+        <div class="card">
+          <div class="card-title">
+            📱 Código QR
+            <span class="badge">Para imprimir</span>
           </div>
-          <div class="field-group">
-            <label class="field-label" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-              <span>📍 Requerir ubicación GPS</span>
-              <label class="switch">
-                <input type="checkbox" id="cfgGpsToggle" onchange="toggleGpsSetting(this.checked)">
-                <span class="slider round"></span>
+          <div class="qr-wrapper">
+            <div class="qr-frame">
+              <img id="qrImage" src="/qr" alt="QR del timbre" />
+            </div>
+            <div class="qr-url" id="qrUrl">Cargando URL...</div>
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="downloadQR()">
+                ⬇️ Descargar QR
+              </button>
+              <button class="btn btn-ghost" onclick="window.print()">
+                🖨️ Imprimir
+              </button>
+              <button class="btn btn-ghost" onclick="copyUrl()">
+                📋 Copiar URL
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config Card -->
+        <div class="card">
+          <div class="card-title">⚙️ Configuración actual</div>
+          <div class="config-row">
+            <div class="field-group">
+              <label class="field-label">🏠 Nombre del hogar</label>
+              <input class="field-input" id="cfgHomeName" readonly />
+            </div>
+            <div class="field-group">
+              <label class="field-label"
+                style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <span>📍 Requerir ubicación GPS</span>
+                <label class="switch">
+                  <input type="checkbox" id="cfgGpsToggle" onchange="toggleGpsSetting(this.checked)">
+                  <span class="slider round"></span>
+                </label>
               </label>
-            </label>
-          </div>
-          <div class="field-group">
-            <label class="field-label">📍 Coordenadas (lat, lng)</label>
-            <input class="field-input" id="cfgCoords" readonly />
-          </div>
-          <div class="field-group">
-            <label class="field-label">📏 Radio permitido (metros)</label>
-            <input class="field-input" id="cfgRadius" readonly />
-          </div>
-          <div class="field-group">
-            <label class="field-label">🔗 URL pública del servidor</label>
-            <input class="field-input" id="cfgUrl" readonly />
-          </div>
-          <div class="env-hint">
-            ✏️ Para cambiar estos valores, editá el archivo <code>.env</code>
-            y reiniciá el servidor con <code>npm start</code>.
+            </div>
+            <div class="field-group">
+              <label class="field-label">📍 Coordenadas (lat, lng)</label>
+              <input class="field-input" id="cfgCoords" readonly />
+            </div>
+            <div class="field-group">
+              <label class="field-label">📏 Radio permitido (metros)</label>
+              <input class="field-input" id="cfgRadius" readonly />
+            </div>
+            <div class="field-group">
+              <label class="field-label">🔗 URL pública del servidor</label>
+              <input class="field-input" id="cfgUrl" readonly />
+            </div>
+            <div class="env-hint">
+              ✏️ Para cambiar estos valores, editá el archivo <code>.env</code>
+              y reiniciá el servidor con <code>npm start</code>.
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Historial de llamadas -->
-    <div class="card">
-      <div class="card-title">📋 Historial de llamadas recientes</div>
-      <div class="history-list" id="historyList">
-        <div class="history-empty">Cargando historial...</div>
-      </div>
-    </div>
-
-    <!-- Instrucciones -->
-    <div class="card">
-      <div class="card-title">📖 Cómo poner el timbre en funcionamiento</div>
-      <div style="display:flex; flex-direction:column; gap:1rem; font-size:0.9rem; color: var(--text-dim); line-height:1.7;">
-        <div>
-          <strong style="color:var(--text);">1. Configurá el archivo <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code></strong><br>
-          Completá tus credenciales de Telegram y/o WhatsApp y las coordenadas exactas de tu puerta.
-          Podés obtener las coordenadas desde Google Maps (clic derecho → copiar coordenadas).
-        </div>
-        <div>
-          <strong style="color:var(--text);">2. Exponé el servidor a internet con ngrok</strong><br>
-          Instalá ngrok (<a href="https://ngrok.com" target="_blank" style="color:var(--teal);">ngrok.com</a>), ejecutá
-          <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">ngrok http 3000</code>
-          y copiá la URL HTTPS que te da. Actualizá <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">SERVER_URL</code> en .env y reiniciá el servidor.
-        </div>
-        <div>
-          <strong style="color:var(--text);">3. Imprimí el QR</strong><br>
-          Descargá o imprimí el QR de arriba. Pegalo en la puerta de tu casa (podés plastificarlo o usar una etiqueta adhesiva resistente a la lluvia).
-        </div>
-        <div>
-          <strong style="color:var(--text);">4. ¡Listo!</strong><br>
-          Cuando alguien escanee el QR con su celular, el sistema verificará que esté dentro del radio permitido y te enviará una notificación por Telegram y/o WhatsApp.
+      <!-- Historial de llamadas -->
+      <div class="card">
+        <div class="card-title">📋 Historial de llamadas recientes</div>
+        <div class="history-list" id="historyList">
+          <div class="history-empty">Cargando historial...</div>
         </div>
       </div>
+
+      <!-- Instrucciones -->
+      <div class="card">
+        <div class="card-title">📖 Cómo poner el timbre en funcionamiento</div>
+        <div
+          style="display:flex; flex-direction:column; gap:1rem; font-size:0.9rem; color: var(--text-dim); line-height:1.7;">
+          <div>
+            <strong style="color:var(--text);">1. Configurá el archivo <code
+                style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">.env</code></strong><br>
+            Completá tus credenciales de Telegram y/o WhatsApp y las coordenadas exactas de tu puerta.
+            Podés obtener las coordenadas desde Google Maps (clic derecho → copiar coordenadas).
+          </div>
+          <div>
+            <strong style="color:var(--text);">2. Exponé el servidor a internet con ngrok</strong><br>
+            Instalá ngrok (<a href="https://ngrok.com" target="_blank" style="color:var(--teal);">ngrok.com</a>),
+            ejecutá
+            <code style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">ngrok http 3000</code>
+            y copiá la URL HTTPS que te da. Actualizá <code
+              style="background:rgba(255,255,255,0.1);padding:0.1em 0.4em;border-radius:4px;">SERVER_URL</code> en .env
+            y reiniciá el servidor.
+          </div>
+          <div>
+            <strong style="color:var(--text);">3. Imprimí el QR</strong><br>
+            Descargá o imprimí el QR de arriba. Pegalo en la puerta de tu casa (podés plastificarlo o usar una etiqueta
+            adhesiva resistente a la lluvia).
+          </div>
+          <div>
+            <strong style="color:var(--text);">4. ¡Listo!</strong><br>
+            Cuando alguien escanee el QR con su celular, el sistema verificará que esté dentro del radio permitido y te
+            enviará una notificación por Telegram y/o WhatsApp.
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal de Llamada Entrante -->
+  <div id="incomingCallModal" class="incoming-modal" style="display: none;">
+    <div class="incoming-info">
+      <span class="incoming-bell-ring">🔔</span>
+      <div>
+        <div style="font-weight: 700; font-size: 0.95rem;">Llamada de la Puerta</div>
+        <div style="font-size: 0.78rem; color: var(--text-dim);" id="incomingCallDistance">Ubicación verificada</div>
+      </div>
     </div>
-
-  </main>
-</div>
-
-<!-- Modal de Llamada Entrante -->
-<div id="incomingCallModal" class="incoming-modal" style="display: none;">
-  <div class="incoming-info">
-    <span class="incoming-bell-ring">🔔</span>
-    <div>
-      <div style="font-weight: 700; font-size: 0.95rem;">Llamada de la Puerta</div>
-      <div style="font-size: 0.78rem; color: var(--text-dim);" id="incomingCallDistance">Ubicación verificada</div>
+    <div style="display: flex; gap: 0.6rem;">
+      <button class="btn btn-ghost" onclick="declineIncomingCall()"
+        style="flex: 1; padding: 0.5rem; justify-content: center; background: rgba(255,77,109,0.1); border-color: rgba(255,77,109,0.2); color: var(--danger);">
+        🔇 Rechazar
+      </button>
+      <button class="btn btn-primary" onclick="acceptIncomingCall()"
+        style="flex: 1; padding: 0.5rem; justify-content: center; background: linear-gradient(135deg, var(--success), #00b359); box-shadow: 0 4px 12px rgba(0,230,118,0.3);">
+        📞 Responder
+      </button>
     </div>
   </div>
-  <div style="display: flex; gap: 0.6rem;">
-    <button class="btn btn-ghost" onclick="declineIncomingCall()" style="flex: 1; padding: 0.5rem; justify-content: center; background: rgba(255,77,109,0.1); border-color: rgba(255,77,109,0.2); color: var(--danger);">
-      🔇 Rechazar
-    </button>
-    <button class="btn btn-primary" onclick="acceptIncomingCall()" style="flex: 1; padding: 0.5rem; justify-content: center; background: linear-gradient(135deg, var(--success), #00b359); box-shadow: 0 4px 12px rgba(0,230,118,0.3);">
-      📞 Responder
-    </button>
-  </div>
-</div>
 
-<!-- Overlay de Intercomunicador Completo -->
-<div id="adminIntercomOverlay" class="intercom-overlay" style="display: none;">
-  <div class="intercom-window">
-    <div class="intercom-header">
-      <div class="intercom-title">
-        <span>📞</span>
-        <span id="intercomRoomTitle">Intercomunicador — Timbre</span>
-      </div>
-      <div class="live-indicator">
-        <span class="dot"></span>
-        <span id="intercomConnectionStatus">VIVO</span>
-      </div>
-    </div>
-
-    <div class="intercom-viewport">
-      <!-- Video Remoto (Visitante) -->
-      <video id="adminRemoteVideo" class="remote" autoplay playsinline></video>
-      <!-- Placeholder si no hay stream remoto -->
-      <div id="adminRemotePlaceholder" class="placeholder" style="display: none;">
-        <div style="font-size: 4rem;">🚪</div>
-        <div style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;">Cámara de visitante apagada</div>
+  <!-- Overlay de Intercomunicador Completo -->
+  <div id="adminIntercomOverlay" class="intercom-overlay" style="display: none;">
+    <div class="intercom-window">
+      <div class="intercom-header">
+        <div class="intercom-title">
+          <span>📞</span>
+          <span id="intercomRoomTitle">Intercomunicador — Timbre</span>
+        </div>
+        <div class="live-indicator">
+          <span class="dot"></span>
+          <span id="intercomConnectionStatus">VIVO</span>
+        </div>
       </div>
 
-      <!-- Video Local (Dueño) en miniatura flotante -->
-      <video id="adminLocalVideo" class="local" autoplay muted playsinline></video>
-    </div>
+      <div class="intercom-viewport">
+        <!-- Video Remoto (Visitante) -->
+        <video id="adminRemoteVideo" class="remote" autoplay playsinline></video>
+        <!-- Placeholder si no hay stream remoto -->
+        <div id="adminRemotePlaceholder" class="placeholder" style="display: none;">
+          <div style="font-size: 4rem;">🚪</div>
+          <div style="font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;">Cámara
+            de visitante apagada</div>
+        </div>
 
-    <div class="intercom-footer">
-      <div style="font-size: 0.8rem; color: var(--text-dim); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;" id="intercomDetails">
-        Estableciendo enlace de video directo...
+        <!-- Video Local (Dueño) en miniatura flotante -->
+        <video id="adminLocalVideo" class="local" autoplay muted playsinline></video>
       </div>
-      <div class="intercom-actions">
-        <div class="control-row-admin">
-          <button class="btn btn-ghost" id="adminToggleMic" onclick="adminToggleMic()" style="width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.1rem; border: 1px solid var(--border);" title="Silenciar Micrófono">
-            🎤
+
+      <div class="intercom-footer">
+        <div
+          style="font-size: 0.8rem; color: var(--text-dim); text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;"
+          id="intercomDetails">
+          Estableciendo enlace de video directo...
+        </div>
+        <div class="intercom-actions">
+          <div class="control-row-admin">
+            <button class="btn btn-ghost" id="adminToggleMic" onclick="adminToggleMic()"
+              style="width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.1rem; border: 1px solid var(--border);"
+              title="Silenciar Micrófono">
+              🎤
+            </button>
+            <button class="btn btn-ghost" id="adminToggleCam" onclick="adminToggleCam()"
+              style="width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.1rem; border: 1px solid var(--border);"
+              title="Apagar Cámara">
+              📷
+            </button>
+          </div>
+
+          <!-- Botón de apertura de puerta -->
+          <button class="btn-unlock" id="btnAdminUnlock" onclick="adminOpenDoor()">
+            🔑 ABRIR PUERTA
           </button>
-          <button class="btn btn-ghost" id="adminToggleCam" onclick="adminToggleCam()" style="width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.1rem; border: 1px solid var(--border);" title="Apagar Cámara">
-            📷
+
+          <button class="btn btn-primary" onclick="adminHangUp()"
+            style="background: var(--danger); box-shadow: 0 4px 15px rgba(255,77,109,0.3); width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.2rem;"
+            title="Colgar Llamada">
+            🛑
           </button>
         </div>
-        
-        <!-- Botón de apertura de puerta -->
-        <button class="btn-unlock" id="btnAdminUnlock" onclick="adminOpenDoor()">
-          🔑 ABRIR PUERTA
-        </button>
-
-        <button class="btn btn-primary" onclick="adminHangUp()" style="background: var(--danger); box-shadow: 0 4px 15px rgba(255,77,109,0.3); width: 48px; height: 48px; border-radius: 50%; padding: 0; justify-content: center; font-size: 1.2rem;" title="Colgar Llamada">
-          🛑
-        </button>
       </div>
     </div>
   </div>
-</div>
 
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  let statusData = null;
-  let qrUrl = '';
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    let statusData = null;
+    let qrUrl = '';
 
-  async function loadStatus() {
-    try {
-      const res = await fetch('/status');
-      if (!res.ok) throw new Error('offline');
-      statusData = await res.json();
+    async function loadStatus() {
+      try {
+        const res = await fetch('/status');
+        if (!res.ok) throw new Error('offline');
+        statusData = await res.json();
 
-      // Header
-      document.getElementById('homeTitleBadge').textContent = statusData.homeName;
-      document.getElementById('serverStatusPill').className = 'status-pill';
-      document.getElementById('serverStatusText').textContent = 'Servidor online';
-      document.getElementById('sidebarStatus').innerHTML =
-        `✅ Online<br>Puerto: ${location.port || 80}`;
+        // Header
+        document.getElementById('homeTitleBadge').textContent = statusData.homeName;
+        document.getElementById('serverStatusPill').className = 'status-pill';
+        document.getElementById('serverStatusText').textContent = 'Servidor online';
+        document.getElementById('sidebarStatus').innerHTML =
+          `✅ Online<br>Puerto: ${location.port || 80}`;
 
-      // Stats
-      document.getElementById('statRingCount').textContent = statusData.ringCount || '0';
-      document.getElementById('statRadius').textContent = statusData.allowedRadius;
+        // Stats
+        document.getElementById('statRingCount').textContent = statusData.ringCount || '0';
+        document.getElementById('statRadius').textContent = statusData.allowedRadius;
 
-      if (statusData.lastRingTime) {
-        const d = new Date(statusData.lastRingTime);
-        document.getElementById('statLastRing').textContent =
-          d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-        document.getElementById('statLastRingSub').textContent =
-          d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
-      } else {
-        document.getElementById('statLastRing').textContent = 'Nunca';
-        document.getElementById('statLastRingSub').textContent = 'Aún no se tocó el timbre';
+        if (statusData.lastRingTime) {
+          const d = new Date(statusData.lastRingTime);
+          document.getElementById('statLastRing').textContent =
+            d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+          document.getElementById('statLastRingSub').textContent =
+            d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
+        } else {
+          document.getElementById('statLastRing').textContent = 'Nunca';
+          document.getElementById('statLastRingSub').textContent = 'Aún no se tocó el timbre';
+        }
+
+        // Telegram
+        const teleEl = document.getElementById('telegramStatusEl');
+        if (statusData.telegramConfigured) {
+          teleEl.className = 'telegram-status ok';
+          teleEl.textContent = '✅ Configurado';
+          document.getElementById('telegramSub').textContent = `Chat ID: ${statusData.lastRings?.[0] ? 'activo' : 'listo'}`;
+        } else {
+          teleEl.className = 'telegram-status bad';
+          teleEl.textContent = '⛔ Sin configurar';
+          document.getElementById('telegramSub').textContent = 'Editá el .env con tu token';
+        }
+
+        // WhatsApp
+        const waEl = document.getElementById('whatsappStatusEl');
+        if (statusData.whatsappConfigured) {
+          waEl.className = 'telegram-status ok';
+          waEl.textContent = '✅ Configurado';
+          document.getElementById('whatsappSub').textContent = 'Listo para enviar';
+        } else {
+          waEl.className = 'telegram-status bad';
+          waEl.textContent = '⛔ Sin configurar';
+          document.getElementById('whatsappSub').textContent = 'Editá el .env con tus datos';
+        }
+
+        // Config
+        document.getElementById('cfgHomeName').value = statusData.homeName;
+        document.getElementById('cfgCoords').value =
+          `${statusData.houseCoords.lat}, ${statusData.houseCoords.lng}`;
+        document.getElementById('cfgRadius').value = statusData.allowedRadius + ' m';
+        document.getElementById('cfgUrl').value = statusData.serverUrl;
+        qrUrl = statusData.serverUrl + '/';
+        document.getElementById('qrUrl').textContent = qrUrl;
+
+        // GPS config
+        const gpsToggle = document.getElementById('cfgGpsToggle');
+        if (gpsToggle) {
+          gpsToggle.checked = statusData.gpsEnabled;
+          updateGpsUiState(statusData.gpsEnabled);
+        }
+
+        // Historial
+        renderHistory(statusData.lastRings || []);
+
+      } catch (e) {
+        document.getElementById('serverStatusPill').className = 'status-pill offline';
+        document.getElementById('serverStatusText').textContent = 'Servidor offline';
+        document.getElementById('sidebarStatus').innerHTML = '❌ Sin conexión';
       }
-
-      // Telegram
-      const teleEl = document.getElementById('telegramStatusEl');
-      if (statusData.telegramConfigured) {
-        teleEl.className = 'telegram-status ok';
-        teleEl.textContent = '✅ Configurado';
-        document.getElementById('telegramSub').textContent = `Chat ID: ${statusData.lastRings?.[0] ? 'activo' : 'listo'}`;
-      } else {
-        teleEl.className = 'telegram-status bad';
-        teleEl.textContent = '⛔ Sin configurar';
-        document.getElementById('telegramSub').textContent = 'Editá el .env con tu token';
-      }
-
-      // WhatsApp
-      const waEl = document.getElementById('whatsappStatusEl');
-      if (statusData.whatsappConfigured) {
-        waEl.className = 'telegram-status ok';
-        waEl.textContent = '✅ Configurado';
-        document.getElementById('whatsappSub').textContent = 'Listo para enviar';
-      } else {
-        waEl.className = 'telegram-status bad';
-        waEl.textContent = '⛔ Sin configurar';
-        document.getElementById('whatsappSub').textContent = 'Editá el .env con tus datos';
-      }
-
-      // Config
-      document.getElementById('cfgHomeName').value = statusData.homeName;
-      document.getElementById('cfgCoords').value =
-        `${statusData.houseCoords.lat}, ${statusData.houseCoords.lng}`;
-      document.getElementById('cfgRadius').value = statusData.allowedRadius + ' m';
-      document.getElementById('cfgUrl').value = statusData.serverUrl;
-      qrUrl = statusData.serverUrl + '/';
-      document.getElementById('qrUrl').textContent = qrUrl;
-
-      // GPS config
-      const gpsToggle = document.getElementById('cfgGpsToggle');
-      if (gpsToggle) {
-        gpsToggle.checked = statusData.gpsEnabled;
-        updateGpsUiState(statusData.gpsEnabled);
-      }
-
-      // Historial
-      renderHistory(statusData.lastRings || []);
-
-    } catch (e) {
-      document.getElementById('serverStatusPill').className = 'status-pill offline';
-      document.getElementById('serverStatusText').textContent = 'Servidor offline';
-      document.getElementById('sidebarStatus').innerHTML = '❌ Sin conexión';
     }
-  }
 
-  function renderHistory(rings) {
-    const el = document.getElementById('historyList');
-    if (!rings.length) {
-      el.innerHTML = '<div class="history-empty">🔕 Aún no se registraron llamadas</div>';
-      return;
-    }
-    el.innerHTML = rings.map(r => {
-      const d = new Date(r.time);
-      const hora = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-      const fecha = d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
-      const distText = (r.distance !== null && r.distance !== undefined)
-        ? `📍 A ${r.distance}m de la puerta`
-        : `📍 GPS desactivado`;
-      return `
+    function renderHistory(rings) {
+      const el = document.getElementById('historyList');
+      if (!rings.length) {
+        el.innerHTML = '<div class="history-empty">🔕 Aún no se registraron llamadas</div>';
+        return;
+      }
+      el.innerHTML = rings.map(r => {
+        const d = new Date(r.time);
+        const hora = d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+        const fecha = d.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' });
+        const distText = (r.distance !== null && r.distance !== undefined)
+          ? `📍 A ${r.distance}m de la puerta`
+          : `📍 GPS desactivado`;
+        return `
         <div class="history-item">
           <span class="history-icon">🔔</span>
           <div class="history-info">
@@ -800,438 +1165,439 @@
           </div>
         </div>
       `;
-    }).join('');
-  }
-
-  async function toggleGpsSetting(enabled) {
-    try {
-      const res = await fetch('/toggle-gps', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'No se pudo actualizar la configuración');
-      }
-      // Actualizar UI
-      document.getElementById('cfgGpsToggle').checked = data.gpsEnabled;
-      updateGpsUiState(data.gpsEnabled);
-    } catch (err) {
-      alert('Error: ' + err.message);
-      // Revertir checkbox
-      document.getElementById('cfgGpsToggle').checked = !enabled;
+      }).join('');
     }
-  }
 
-  function updateGpsUiState(enabled) {
-    const coordsInput = document.getElementById('cfgCoords');
-    const radiusInput = document.getElementById('cfgRadius');
-    if (coordsInput && radiusInput) {
-      if (enabled) {
-        coordsInput.style.opacity = '1';
-        radiusInput.style.opacity = '1';
-      } else {
-        coordsInput.style.opacity = '0.5';
-        radiusInput.style.opacity = '0.5';
+    async function toggleGpsSetting(enabled) {
+      try {
+        const res = await fetch('/toggle-gps', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'No se pudo actualizar la configuración');
+        }
+        // Actualizar UI
+        document.getElementById('cfgGpsToggle').checked = data.gpsEnabled;
+        updateGpsUiState(data.gpsEnabled);
+      } catch (err) {
+        alert('Error: ' + err.message);
+        // Revertir checkbox
+        document.getElementById('cfgGpsToggle').checked = !enabled;
       }
     }
-  }
 
-  function downloadQR() {
-    const a = document.createElement('a');
-    a.href = '/qr';
-    a.download = 'timbre-qr.png';
-    a.click();
-  }
-
-  function copyUrl() {
-    const url = qrUrl || location.origin + '/';
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = event.target;
-      const original = btn.textContent;
-      btn.textContent = '✅ Copiado!';
-      setTimeout(() => btn.textContent = original, 2000);
-    });
-  }
-
-  // Cargar estado al inicio y cada 10 segundos
-  loadStatus();
-  setInterval(loadStatus, 10000);
-
-  // ──────────────────────────────────────────
-  // Lógica de Intercomunicador Admin (WebRTC + Socket.IO)
-  // ──────────────────────────────────────────
-  let adminSocket = null;
-  let adminPeerConnection = null;
-  let adminLocalStream = null;
-  let activeCallRingId = null;
-  let isAdminMicMuted = false;
-  let isAdminCamOff = false;
-
-  let ringtoneInterval = null;
-  let audioContext = null;
-
-  function playRingtone() {
-    if (ringtoneInterval) return;
-    
-    try {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
-      const playTonePattern = () => {
-        if (!audioContext || audioContext.state === 'suspended') return;
-        
-        // Efecto digital dual-tone: ring-ring... silencio
-        const now = audioContext.currentTime;
-        
-        const osc1 = audioContext.createOscillator();
-        const osc2 = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(480, now);
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(440, now);
-        
-        gainNode.gain.setValueAtTime(0, now);
-        gainNode.gain.linearRampToValueAtTime(0.15, now + 0.05);
-        gainNode.gain.setValueAtTime(0.15, now + 0.4);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-        
-        // Segundo timbrado rápido
-        const now2 = now + 0.6;
-        const osc1_2 = audioContext.createOscillator();
-        const osc2_2 = audioContext.createOscillator();
-        const gainNode2 = audioContext.createGain();
-        
-        osc1_2.type = 'sine';
-        osc1_2.frequency.setValueAtTime(480, now2);
-        osc2_2.type = 'sine';
-        osc2_2.frequency.setValueAtTime(440, now2);
-        
-        gainNode2.gain.setValueAtTime(0, now2);
-        gainNode2.gain.linearRampToValueAtTime(0.15, now2 + 0.05);
-        gainNode2.gain.setValueAtTime(0.15, now2 + 0.4);
-        gainNode2.gain.exponentialRampToValueAtTime(0.001, now2 + 0.45);
-        
-        osc1.connect(gainNode);
-        osc2.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        osc1_2.connect(gainNode2);
-        osc2_2.connect(gainNode2);
-        gainNode2.connect(audioContext.destination);
-        
-        osc1.start(now);
-        osc2.start(now);
-        osc1.stop(now + 0.5);
-        osc2.stop(now + 0.5);
-        
-        osc1_2.start(now2);
-        osc2_2.start(now2);
-        osc1_2.stop(now2 + 0.5);
-        osc2_2.stop(now2 + 0.5);
-      };
-      
-      playTonePattern();
-      ringtoneInterval = setInterval(playTonePattern, 3000);
-      
-    } catch (e) {
-      console.warn('AudioContext no soportado', e);
-    }
-  }
-
-  function stopRingtone() {
-    if (ringtoneInterval) {
-      clearInterval(ringtoneInterval);
-      ringtoneInterval = null;
-    }
-    if (audioContext) {
-      audioContext.close();
-      audioContext = null;
-    }
-  }
-
-  function playClickSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(800, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.35);
-      
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-      
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      
-      osc.start();
-      osc.stop(ctx.currentTime + 0.35);
-    } catch(e){}
-  }
-
-  function initAdminSocket() {
-    adminSocket = io();
-    
-    adminSocket.on('incoming-ring', (data) => {
-      console.log('[SOCKET] Ring entrante en el Admin:', data);
-      
-      // Si ya hay una llamada en curso o modal abierto, ignorar rings simultáneos
-      if (activeCallRingId) return;
-      
-      activeCallRingId = data.ringId;
-      document.getElementById('incomingCallDistance').textContent = `📍 A ${data.distance}m de la puerta`;
-      document.getElementById('incomingCallModal').style.display = 'flex';
-      
-      playRingtone();
-    });
-
-    adminSocket.on('webrtc-offer', async (offer) => {
-      console.log('[WebRTC] Recibida oferta WebRTC del visitante.');
-      if (adminPeerConnection) {
-        try {
-          await adminPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-          const answer = await adminPeerConnection.createAnswer();
-          await adminPeerConnection.setLocalDescription(answer);
-          adminSocket.emit('webrtc-answer', { roomId: activeCallRingId, answer });
-        } catch (e) {
-          console.error('[WebRTC] Error al procesar la oferta del visitante:', e);
+    function updateGpsUiState(enabled) {
+      const coordsInput = document.getElementById('cfgCoords');
+      const radiusInput = document.getElementById('cfgRadius');
+      if (coordsInput && radiusInput) {
+        if (enabled) {
+          coordsInput.style.opacity = '1';
+          radiusInput.style.opacity = '1';
+        } else {
+          coordsInput.style.opacity = '0.5';
+          radiusInput.style.opacity = '0.5';
         }
       }
-    });
+    }
 
-    adminSocket.on('webrtc-candidate', async (candidate) => {
-      if (adminPeerConnection) {
-        try {
-          await adminPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        } catch (e) {
-          console.error('[WebRTC] Error al agregar candidato ICE:', e);
-        }
-      }
-    });
+    function downloadQR() {
+      const a = document.createElement('a');
+      a.href = '/qr';
+      a.download = 'timbre-qr.png';
+      a.click();
+    }
 
-    adminSocket.on('hang-up', () => {
-      console.log('[SOCKET] El visitante colgó.');
-      closeAdminIntercom('Llamada finalizada por el visitante');
-    });
-  }
-
-  async function acceptIncomingCall(fromTelegram = false) {
-    stopRingtone();
-    document.getElementById('incomingCallModal').style.display = 'none';
-    
-    const overlay = document.getElementById('adminIntercomOverlay');
-    overlay.style.display = 'flex';
-    document.getElementById('intercomRoomTitle').textContent = `Intercomunicador — Puerta`;
-    document.getElementById('intercomDetails').textContent = `Conectando canal de audio/video...`;
-    
-    // Resetear controles UI
-    const micBtn = document.getElementById('adminToggleMic');
-    const camBtn = document.getElementById('adminToggleCam');
-    micBtn.className = 'btn btn-ghost';
-    micBtn.textContent = '🎤';
-    micBtn.style.background = '';
-    micBtn.style.color = '';
-    
-    camBtn.className = 'btn btn-ghost';
-    camBtn.textContent = '📷';
-    camBtn.style.background = '';
-    camBtn.style.color = '';
-    
-    const unlockBtn = document.getElementById('btnAdminUnlock');
-    unlockBtn.className = 'btn-unlock';
-    unlockBtn.innerHTML = `🔑 ABRIR PUERTA`;
-    unlockBtn.disabled = false;
-    
-    isAdminMicMuted = false;
-    isAdminCamOff = false;
-
-    // 1. Obtener stream local del administrador
-    try {
-      adminLocalStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 320, height: 240, facingMode: 'user' },
-        audio: true
+    function copyUrl() {
+      const url = qrUrl || location.origin + '/';
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target;
+        const original = btn.textContent;
+        btn.textContent = '✅ Copiado!';
+        setTimeout(() => btn.textContent = original, 2000);
       });
-      document.getElementById('adminLocalVideo').srcObject = adminLocalStream;
-      document.getElementById('adminLocalVideo').style.display = 'block';
-    } catch (err) {
-      console.warn('[Admin WebRTC] No se pudo obtener la cámara. Intentando solo audio...', err);
+    }
+
+    // Cargar estado al inicio y cada 10 segundos
+    loadStatus();
+    setInterval(loadStatus, 10000);
+
+    // ──────────────────────────────────────────
+    // Lógica de Intercomunicador Admin (WebRTC + Socket.IO)
+    // ──────────────────────────────────────────
+    let adminSocket = null;
+    let adminPeerConnection = null;
+    let adminLocalStream = null;
+    let activeCallRingId = null;
+    let isAdminMicMuted = false;
+    let isAdminCamOff = false;
+
+    let ringtoneInterval = null;
+    let audioContext = null;
+
+    function playRingtone() {
+      if (ringtoneInterval) return;
+
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        const playTonePattern = () => {
+          if (!audioContext || audioContext.state === 'suspended') return;
+
+          // Efecto digital dual-tone: ring-ring... silencio
+          const now = audioContext.currentTime;
+
+          const osc1 = audioContext.createOscillator();
+          const osc2 = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(480, now);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(440, now);
+
+          gainNode.gain.setValueAtTime(0, now);
+          gainNode.gain.linearRampToValueAtTime(0.15, now + 0.05);
+          gainNode.gain.setValueAtTime(0.15, now + 0.4);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+          // Segundo timbrado rápido
+          const now2 = now + 0.6;
+          const osc1_2 = audioContext.createOscillator();
+          const osc2_2 = audioContext.createOscillator();
+          const gainNode2 = audioContext.createGain();
+
+          osc1_2.type = 'sine';
+          osc1_2.frequency.setValueAtTime(480, now2);
+          osc2_2.type = 'sine';
+          osc2_2.frequency.setValueAtTime(440, now2);
+
+          gainNode2.gain.setValueAtTime(0, now2);
+          gainNode2.gain.linearRampToValueAtTime(0.15, now2 + 0.05);
+          gainNode2.gain.setValueAtTime(0.15, now2 + 0.4);
+          gainNode2.gain.exponentialRampToValueAtTime(0.001, now2 + 0.45);
+
+          osc1.connect(gainNode);
+          osc2.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+
+          osc1_2.connect(gainNode2);
+          osc2_2.connect(gainNode2);
+          gainNode2.connect(audioContext.destination);
+
+          osc1.start(now);
+          osc2.start(now);
+          osc1.stop(now + 0.5);
+          osc2.stop(now + 0.5);
+
+          osc1_2.start(now2);
+          osc2_2.start(now2);
+          osc1_2.stop(now2 + 0.5);
+          osc2_2.stop(now2 + 0.5);
+        };
+
+        playTonePattern();
+        ringtoneInterval = setInterval(playTonePattern, 3000);
+
+      } catch (e) {
+        console.warn('AudioContext no soportado', e);
+      }
+    }
+
+    function stopRingtone() {
+      if (ringtoneInterval) {
+        clearInterval(ringtoneInterval);
+        ringtoneInterval = null;
+      }
+      if (audioContext) {
+        audioContext.close();
+        audioContext = null;
+      }
+    }
+
+    function playClickSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+      } catch (e) { }
+    }
+
+    function initAdminSocket() {
+      adminSocket = io();
+
+      adminSocket.on('incoming-ring', (data) => {
+        console.log('[SOCKET] Ring entrante en el Admin:', data);
+
+        // Si ya hay una llamada en curso o modal abierto, ignorar rings simultáneos
+        if (activeCallRingId) return;
+
+        activeCallRingId = data.ringId;
+        document.getElementById('incomingCallDistance').textContent = `📍 A ${data.distance}m de la puerta`;
+        document.getElementById('incomingCallModal').style.display = 'flex';
+
+        playRingtone();
+      });
+
+      adminSocket.on('webrtc-offer', async (offer) => {
+        console.log('[WebRTC] Recibida oferta WebRTC del visitante.');
+        if (adminPeerConnection) {
+          try {
+            await adminPeerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await adminPeerConnection.createAnswer();
+            await adminPeerConnection.setLocalDescription(answer);
+            adminSocket.emit('webrtc-answer', { roomId: activeCallRingId, answer });
+          } catch (e) {
+            console.error('[WebRTC] Error al procesar la oferta del visitante:', e);
+          }
+        }
+      });
+
+      adminSocket.on('webrtc-candidate', async (candidate) => {
+        if (adminPeerConnection) {
+          try {
+            await adminPeerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+          } catch (e) {
+            console.error('[WebRTC] Error al agregar candidato ICE:', e);
+          }
+        }
+      });
+
+      adminSocket.on('hang-up', () => {
+        console.log('[SOCKET] El visitante colgó.');
+        closeAdminIntercom('Llamada finalizada por el visitante');
+      });
+    }
+
+    async function acceptIncomingCall(fromTelegram = false) {
+      stopRingtone();
+      document.getElementById('incomingCallModal').style.display = 'none';
+
+      const overlay = document.getElementById('adminIntercomOverlay');
+      overlay.style.display = 'flex';
+      document.getElementById('intercomRoomTitle').textContent = `Intercomunicador — Puerta`;
+      document.getElementById('intercomDetails').textContent = `Conectando canal de audio/video...`;
+
+      // Resetear controles UI
+      const micBtn = document.getElementById('adminToggleMic');
+      const camBtn = document.getElementById('adminToggleCam');
+      micBtn.className = 'btn btn-ghost';
+      micBtn.textContent = '🎤';
+      micBtn.style.background = '';
+      micBtn.style.color = '';
+
+      camBtn.className = 'btn btn-ghost';
+      camBtn.textContent = '📷';
+      camBtn.style.background = '';
+      camBtn.style.color = '';
+
+      const unlockBtn = document.getElementById('btnAdminUnlock');
+      unlockBtn.className = 'btn-unlock';
+      unlockBtn.innerHTML = `🔑 ABRIR PUERTA`;
+      unlockBtn.disabled = false;
+
+      isAdminMicMuted = false;
+      isAdminCamOff = false;
+
+      // 1. Obtener stream local del administrador
       try {
         adminLocalStream = await navigator.mediaDevices.getUserMedia({
-          video: false,
+          video: { width: 320, height: 240, facingMode: 'user' },
           audio: true
         });
-        document.getElementById('adminLocalVideo').style.display = 'none';
-      } catch (audioErr) {
-        console.error('[Admin WebRTC] Error al inicializar audio local.', audioErr);
-        document.getElementById('intercomDetails').textContent = '⚠️ Error: Necesitás habilitar tu micrófono para hablar.';
+        document.getElementById('adminLocalVideo').srcObject = adminLocalStream;
+        document.getElementById('adminLocalVideo').style.display = 'block';
+      } catch (err) {
+        console.warn('[Admin WebRTC] No se pudo obtener la cámara. Intentando solo audio...', err);
+        try {
+          adminLocalStream = await navigator.mediaDevices.getUserMedia({
+            video: false,
+            audio: true
+          });
+          document.getElementById('adminLocalVideo').style.display = 'none';
+        } catch (audioErr) {
+          console.error('[Admin WebRTC] Error al inicializar audio local.', audioErr);
+          document.getElementById('intercomDetails').textContent = '⚠️ Error: Necesitás habilitar tu micrófono para hablar.';
+        }
+      }
+
+      // 2. Unirse a la sala Socket.IO
+      if (adminSocket && activeCallRingId) {
+        adminSocket.emit('join-room', { roomId: activeCallRingId, role: 'admin' });
+        initAdminPeerConnection();
       }
     }
 
-    // 2. Unirse a la sala Socket.IO
-    if (adminSocket && activeCallRingId) {
-      adminSocket.emit('join-room', { roomId: activeCallRingId, role: 'admin' });
-      initAdminPeerConnection();
-    }
-  }
+    function initAdminPeerConnection() {
+      console.log('[Admin WebRTC] Inicializando RTCPeerConnection...');
+      const peerConfiguration = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+      };
 
-  function initAdminPeerConnection() {
-    console.log('[Admin WebRTC] Inicializando RTCPeerConnection...');
-    const peerConfiguration = {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
-    };
-    
-    adminPeerConnection = new RTCPeerConnection(peerConfiguration);
+      adminPeerConnection = new RTCPeerConnection(peerConfiguration);
 
-    if (adminLocalStream) {
-      adminLocalStream.getTracks().forEach(track => {
-        adminPeerConnection.addTrack(track, adminLocalStream);
-      });
-    }
-
-    adminPeerConnection.ontrack = (event) => {
-      console.log('[Admin WebRTC] Stream remoto del visitante recibido.');
-      const remoteVideo = document.getElementById('adminRemoteVideo');
-      const placeholder = document.getElementById('adminRemotePlaceholder');
-      remoteVideo.srcObject = event.streams[0];
-      remoteVideo.style.display = 'block';
-      placeholder.style.display = 'none';
-      
-      document.getElementById('intercomDetails').textContent = `🟢 Enlace de audio/video en tiempo real activo.`;
-      document.getElementById('intercomConnectionStatus').textContent = 'VIVO';
-    };
-
-    adminPeerConnection.onicecandidate = (event) => {
-      if (event.candidate && activeCallRingId && adminSocket) {
-        adminSocket.emit('webrtc-candidate', { roomId: activeCallRingId, candidate: event.candidate });
+      if (adminLocalStream) {
+        adminLocalStream.getTracks().forEach(track => {
+          adminPeerConnection.addTrack(track, adminLocalStream);
+        });
       }
-    };
-  }
 
-  function declineIncomingCall() {
-    stopRingtone();
-    document.getElementById('incomingCallModal').style.display = 'none';
-    if (adminSocket && activeCallRingId) {
-      adminSocket.emit('hang-up', { roomId: activeCallRingId });
-    }
-    activeCallRingId = null;
-  }
+      adminPeerConnection.ontrack = (event) => {
+        console.log('[Admin WebRTC] Stream remoto del visitante recibido.');
+        const remoteVideo = document.getElementById('adminRemoteVideo');
+        const placeholder = document.getElementById('adminRemotePlaceholder');
+        remoteVideo.srcObject = event.streams[0];
+        remoteVideo.style.display = 'block';
+        placeholder.style.display = 'none';
 
-  function adminOpenDoor() {
-    if (!adminSocket || !activeCallRingId) return;
-    
-    playClickSound();
-    adminSocket.emit('open-door', { roomId: activeCallRingId });
-    console.log('[Admin] Señal de abrir puerta enviada.');
-
-    const btn = document.getElementById('btnAdminUnlock');
-    btn.className = 'btn-unlock unlocked';
-    btn.innerHTML = `🟢 PUERTA ABIERTA`;
-    btn.disabled = true;
-    
-    document.getElementById('intercomDetails').textContent = `🔓 Señal enviada. El zumbador de la puerta está activo.`;
-
-    setTimeout(() => {
-      if (activeCallRingId) {
-        btn.className = 'btn-unlock';
-        btn.innerHTML = `🔑 ABRIR PUERTA`;
-        btn.disabled = false;
         document.getElementById('intercomDetails').textContent = `🟢 Enlace de audio/video en tiempo real activo.`;
+        document.getElementById('intercomConnectionStatus').textContent = 'VIVO';
+      };
+
+      adminPeerConnection.onicecandidate = (event) => {
+        if (event.candidate && activeCallRingId && adminSocket) {
+          adminSocket.emit('webrtc-candidate', { roomId: activeCallRingId, candidate: event.candidate });
+        }
+      };
+    }
+
+    function declineIncomingCall() {
+      stopRingtone();
+      document.getElementById('incomingCallModal').style.display = 'none';
+      if (adminSocket && activeCallRingId) {
+        adminSocket.emit('hang-up', { roomId: activeCallRingId });
       }
-    }, 5000);
-  }
-
-  function adminToggleMic() {
-    if (!adminLocalStream) return;
-    isAdminMicMuted = !isAdminMicMuted;
-    adminLocalStream.getAudioTracks().forEach(track => track.enabled = !isAdminMicMuted);
-    
-    const btn = document.getElementById('adminToggleMic');
-    if (isAdminMicMuted) {
-      btn.className = 'btn btn-ghost off';
-      btn.style.background = 'var(--danger)';
-      btn.style.color = '#fff';
-      btn.textContent = '🔇';
-    } else {
-      btn.className = 'btn btn-ghost';
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.textContent = '🎤';
-    }
-  }
-
-  function adminToggleCam() {
-    if (!adminLocalStream) return;
-    isAdminCamOff = !isAdminCamOff;
-    adminLocalStream.getVideoTracks().forEach(track => track.enabled = !isAdminCamOff);
-    
-    const btn = document.getElementById('adminToggleCam');
-    if (isAdminCamOff) {
-      btn.className = 'btn btn-ghost off';
-      btn.style.background = 'var(--danger)';
-      btn.style.color = '#fff';
-      btn.textContent = '🚫';
-    } else {
-      btn.className = 'btn btn-ghost';
-      btn.style.background = '';
-      btn.style.color = '';
-      btn.textContent = '📷';
-    }
-  }
-
-  function adminHangUp() {
-    if (adminSocket && activeCallRingId) {
-      adminSocket.emit('hang-up', { roomId: activeCallRingId });
-    }
-    closeAdminIntercom('Llamada finalizada');
-  }
-
-  function closeAdminIntercom(statusMsg) {
-    stopRingtone();
-    
-    document.getElementById('adminIntercomOverlay').style.display = 'none';
-    document.getElementById('incomingCallModal').style.display = 'none';
-
-    if (adminLocalStream) {
-      adminLocalStream.getTracks().forEach(track => track.stop());
-      adminLocalStream = null;
+      activeCallRingId = null;
     }
 
-    if (adminPeerConnection) {
-      adminPeerConnection.close();
-      adminPeerConnection = null;
+    function adminOpenDoor() {
+      if (!adminSocket || !activeCallRingId) return;
+
+      playClickSound();
+      adminSocket.emit('open-door', { roomId: activeCallRingId });
+      console.log('[Admin] Señal de abrir puerta enviada.');
+
+      const btn = document.getElementById('btnAdminUnlock');
+      btn.className = 'btn-unlock unlocked';
+      btn.innerHTML = `🟢 PUERTA ABIERTA`;
+      btn.disabled = true;
+
+      document.getElementById('intercomDetails').textContent = `🔓 Señal enviada. El zumbador de la puerta está activo.`;
+
+      setTimeout(() => {
+        if (activeCallRingId) {
+          btn.className = 'btn-unlock';
+          btn.innerHTML = `🔑 ABRIR PUERTA`;
+          btn.disabled = false;
+          document.getElementById('intercomDetails').textContent = `🟢 Enlace de audio/video en tiempo real activo.`;
+        }
+      }, 5000);
     }
 
-    document.getElementById('adminRemoteVideo').srcObject = null;
-    document.getElementById('adminLocalVideo').srcObject = null;
-    
-    activeCallRingId = null;
-    console.log('[Admin Intercom] Intercomunicador cerrado:', statusMsg);
+    function adminToggleMic() {
+      if (!adminLocalStream) return;
+      isAdminMicMuted = !isAdminMicMuted;
+      adminLocalStream.getAudioTracks().forEach(track => track.enabled = !isAdminMicMuted);
 
-    // Limpiar el ringId de la URL para evitar recargas accidentales
-    const url = new URL(window.location.href);
-    url.searchParams.delete('ringId');
-    window.history.replaceState({}, document.title, url.toString());
-  }
+      const btn = document.getElementById('adminToggleMic');
+      if (isAdminMicMuted) {
+        btn.className = 'btn btn-ghost off';
+        btn.style.background = 'var(--danger)';
+        btn.style.color = '#fff';
+        btn.textContent = '🔇';
+      } else {
+        btn.className = 'btn btn-ghost';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.textContent = '🎤';
+      }
+    }
 
-  // Inicializar Socket del administrador y chequear URL
-  initAdminSocket();
+    function adminToggleCam() {
+      if (!adminLocalStream) return;
+      isAdminCamOff = !isAdminCamOff;
+      adminLocalStream.getVideoTracks().forEach(track => track.enabled = !isAdminCamOff);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const ringIdFromUrl = urlParams.get('ringId');
-  if (ringIdFromUrl) {
-    activeCallRingId = ringIdFromUrl;
-    // Mostrar modal con distancia genérica y sonar ringtone una vez antes de auto-responder
-    document.getElementById('incomingCallDistance').textContent = `📍 Videollamada directa desde Telegram`;
-    document.getElementById('incomingCallModal').style.display = 'flex';
-    playRingtone();
-  }
-</script>
+      const btn = document.getElementById('adminToggleCam');
+      if (isAdminCamOff) {
+        btn.className = 'btn btn-ghost off';
+        btn.style.background = 'var(--danger)';
+        btn.style.color = '#fff';
+        btn.textContent = '🚫';
+      } else {
+        btn.className = 'btn btn-ghost';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.textContent = '📷';
+      }
+    }
+
+    function adminHangUp() {
+      if (adminSocket && activeCallRingId) {
+        adminSocket.emit('hang-up', { roomId: activeCallRingId });
+      }
+      closeAdminIntercom('Llamada finalizada');
+    }
+
+    function closeAdminIntercom(statusMsg) {
+      stopRingtone();
+
+      document.getElementById('adminIntercomOverlay').style.display = 'none';
+      document.getElementById('incomingCallModal').style.display = 'none';
+
+      if (adminLocalStream) {
+        adminLocalStream.getTracks().forEach(track => track.stop());
+        adminLocalStream = null;
+      }
+
+      if (adminPeerConnection) {
+        adminPeerConnection.close();
+        adminPeerConnection = null;
+      }
+
+      document.getElementById('adminRemoteVideo').srcObject = null;
+      document.getElementById('adminLocalVideo').srcObject = null;
+
+      activeCallRingId = null;
+      console.log('[Admin Intercom] Intercomunicador cerrado:', statusMsg);
+
+      // Limpiar el ringId de la URL para evitar recargas accidentales
+      const url = new URL(window.location.href);
+      url.searchParams.delete('ringId');
+      window.history.replaceState({}, document.title, url.toString());
+    }
+
+    // Inicializar Socket del administrador y chequear URL
+    initAdminSocket();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const ringIdFromUrl = urlParams.get('ringId');
+    if (ringIdFromUrl) {
+      activeCallRingId = ringIdFromUrl;
+      // Mostrar modal con distancia genérica y sonar ringtone una vez antes de auto-responder
+      document.getElementById('incomingCallDistance').textContent = `📍 Videollamada directa desde Telegram`;
+      document.getElementById('incomingCallModal').style.display = 'flex';
+      playRingtone();
+    }
+  </script>
 </body>
+
 </html>
