@@ -244,6 +244,70 @@
     @media (prefers-color-scheme: light) {
       html, body { background: #0f0c29; }
     }
+
+    /* Estilos Intercomunicador */
+    .pulse-dot-green {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulseGreen 1.5s infinite;
+    }
+    @keyframes pulseGreen {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.4; }
+    }
+    
+    .pulse-dot-orange {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+      animation: pulseOrange 1.5s infinite;
+    }
+    @keyframes pulseOrange {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.4; }
+    }
+
+    .control-btn {
+      transition: all 0.2s ease-in-out;
+    }
+    .control-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255,255,255,0.15) !important;
+    }
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+    .control-btn.off {
+      background: var(--danger) !important;
+      border-color: var(--danger) !important;
+      box-shadow: 0 4px 12px rgba(255,77,109,0.3);
+    }
+    .hangup-btn:hover {
+      transform: scale(1.08) rotate(90deg) !important;
+      background: #ff1a43 !important;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 5px rgba(0,212,177,0.3)); }
+      50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 15px rgba(0,212,177,0.6)); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 30px rgba(0,230,118,0.4); }
+      50% { box-shadow: 0 0 60px rgba(0,230,118,0.7); }
+    }
+
+    @keyframes popOpen {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -282,10 +346,64 @@
     <div class="status-text">Presioná el botón para tocar el timbre 👆</div>
   </div>
 
+  <!-- Intercomunicador Panel -->
+  <div id="intercomPanel" style="display: none; width: 100%; max-width: 340px; flex-direction: column; gap: 1.5rem; animation: fadeInUp 0.5s ease-out; z-index: 10;">
+    <div class="status-card state-loading" id="intercomStatusCard" style="max-width: 100%;">
+      <div class="status-text" id="intercomStatusText" style="display: flex; align-items: center; gap: 10px; justify-content: center; width: 100%;">
+        <span class="pulse-dot-orange" id="intercomStatusDot"></span>
+        <strong id="intercomStatusLabel">Conectando intercomunicador...</strong>
+      </div>
+    </div>
+
+    <!-- Contenedor de Videos -->
+    <div class="video-container" style="position: relative; width: 100%; height: 260px; background: rgba(0,0,0,0.4); border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 12px 36px rgba(0,0,0,0.5);">
+      <!-- Video Remoto (Dueño) -->
+      <video id="remoteVideo" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+      <!-- Avatar Placeholder -->
+      <div id="remoteAvatarPlaceholder" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: radial-gradient(circle, #24243e 0%, #0f0c29 100%);">
+        <div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(245,197,24,0.3)); animation: pulse 2s infinite;">🚪</div>
+        <div style="font-size: 0.82rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; text-align: center; padding: 0 1rem;" id="remoteAvatarText">Esperando al dueño...</div>
+      </div>
+
+      <!-- Video Local (Visitante) en miniatura flotante -->
+      <div style="position: absolute; bottom: 12px; right: 12px; width: 90px; height: 120px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.4); background: #000; z-index: 10;">
+        <video id="localVideo" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
+      </div>
+    </div>
+
+    <!-- Controles de Llamada -->
+    <div class="controls-row" style="display: flex; justify-content: center; gap: 1.2rem; align-items: center; width: 100%;">
+      <button class="control-btn" id="btnToggleMic" onclick="toggleMic()" style="width: 50px; height: 50px; border-radius: 50%; border: none; background: var(--glass); color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); outline: none; -webkit-tap-highlight-color: transparent;" title="Silenciar Micrófono">
+        🎤
+      </button>
+      <button class="control-btn hangup-btn" id="btnHangUp" onclick="hangUpCall()" style="width: 60px; height: 60px; border-radius: 50%; border: none; background: var(--danger); color: white; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(255,77,109,0.4); outline: none; -webkit-tap-highlight-color: transparent;" title="Finalizar Intercomunicador">
+        🛑
+      </button>
+      <button class="control-btn" id="btnToggleCam" onclick="toggleCam()" style="width: 50px; height: 50px; border-radius: 50%; border: none; background: var(--glass); color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); outline: none; -webkit-tap-highlight-color: transparent;" title="Apagar Cámara">
+        📷
+      </button>
+    </div>
+  </div>
+
+  <!-- Pantalla de Éxito / Puerta Abierta -->
+  <div id="openDoorOverlay" style="display: none; position: fixed; inset: 0; background: linear-gradient(135deg, #093019 0%, #0c4a26 50%, #0a5c2f 100%); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; gap: 1.5rem; transition: opacity 0.5s ease-in-out;">
+    <div style="width: 140px; height: 140px; border-radius: 50%; background: linear-gradient(135deg, #00e676, #00d4b1); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0,230,118,0.5); border: 4px solid white; animation: pulseGlow 1.5s infinite; position: relative;">
+      <span style="font-size: 4.5rem; animation: popOpen 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;" id="lockIcon">🔒</span>
+    </div>
+    <h1 style="font-size: 2.2rem; font-weight: 800; text-transform: uppercase; color: #ffffff; letter-spacing: 2px; text-shadow: 0 4px 15px rgba(0,0,0,0.3);">¡Puerta Abierta!</h1>
+    <p style="font-size: 1.1rem; max-width: 300px; line-height: 1.6; color: rgba(255,255,255,0.9); font-weight: 400;">
+      El acceso ha sido concedido.<br>Podés abrir la puerta e ingresar.
+    </p>
+    <div style="font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+      Esta pantalla se cerrará automáticamente...
+    </div>
+  </div>
+
 </main>
 
 <div class="footer">Timbre QR inteligente</div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
   // ──────────────────────────────────────────
   // Estrellas de fondo animadas
@@ -341,11 +459,19 @@
   // ──────────────────────────────────────────
   // Cargar nombre del hogar desde el servidor
   // ──────────────────────────────────────────
+  let gpsEnabled = true;
+
   fetch('/status')
     .then(r => r.json())
     .then(data => {
       document.getElementById('homeName').textContent = data.homeName || 'Mi Casa';
       document.title = '🔔 ' + (data.homeName || 'Timbre');
+      if (data.gpsEnabled !== undefined) {
+        gpsEnabled = data.gpsEnabled;
+        if (!gpsEnabled) {
+          document.getElementById('geoHint').innerHTML = '📍 El uso de GPS está desactivado. Podés tocar el timbre directamente.';
+        }
+      }
     })
     .catch(() => {
       document.getElementById('homeName').textContent = 'Mi Casa';
@@ -388,45 +514,54 @@
     btn.classList.add('ringing');
     setTimeout(() => btn.classList.remove('ringing'), 600);
 
-    // 1. Pedir ubicación GPS
-    setLoading('Obteniendo tu ubicación GPS...');
+    let lat = null;
+    let lng = null;
 
-    let position;
-    try {
-      position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 0
+    if (gpsEnabled) {
+      // 1. Pedir ubicación GPS
+      setLoading('Obteniendo tu ubicación GPS...');
+
+      let position;
+      try {
+        position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 12000,
+            maximumAge: 0
+          });
         });
-      });
-    } catch (err) {
-      busy = false;
-      btn.disabled = false;
+      } catch (err) {
+        busy = false;
+        btn.disabled = false;
 
-      if (err.code === 1) { // PERMISSION_DENIED
-        setStatus('error', '🚫',
-          '<strong>Permiso de ubicación denegado</strong><br>' +
-          'Para usar el timbre, necesitás permitir el acceso a tu GPS en el navegador.'
-        );
-      } else if (err.code === 3) { // TIMEOUT
-        setStatus('error', '⏱️',
-          '<strong>Tiempo de espera agotado</strong><br>' +
-          'No se pudo obtener tu ubicación. Intentá de nuevo al aire libre.'
-        );
-      } else {
-        setStatus('error', '📍',
-          '<strong>No se pudo obtener la ubicación</strong><br>' +
-          'Asegurate de tener el GPS activado e intentá de nuevo.'
-        );
+        if (err.code === 1) { // PERMISSION_DENIED
+          setStatus('error', '🚫',
+            '<strong>Permiso de ubicación denegado</strong><br>' +
+            'Para usar el timbre, necesitás permitir el acceso a tu GPS en el navegador.'
+          );
+        } else if (err.code === 3) { // TIMEOUT
+          setStatus('error', '⏱️',
+            '<strong>Tiempo de espera agotado</strong><br>' +
+            'No se pudo obtener tu ubicación. Intentá de nuevo al aire libre.'
+          );
+        } else {
+          setStatus('error', '📍',
+            '<strong>No se pudo obtener la ubicación</strong><br>' +
+            'Asegurate de tener el GPS activado e intentá de nuevo.'
+          );
+        }
+        return;
       }
-      return;
+
+      lat = position.coords.latitude;
+      lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      // 2. Enviar al servidor
+      setLoading(`Verificando que estás en la puerta...<br><small>(precisión GPS: ±${Math.round(accuracy)}m)</small>`);
+    } else {
+      setLoading('Enviando llamada...');
     }
-
-    const { latitude: lat, longitude: lng, accuracy } = position.coords;
-
-    // 2. Enviar al servidor
-    setLoading(`Verificando que estás en la puerta...<br><small>(precisión GPS: ±${Math.round(accuracy)}m)</small>`);
 
     try {
       const res = await fetch('/ring', {
@@ -441,18 +576,17 @@
         // ✅ Éxito
         setStatus('success', '✅',
           `<strong>¡Notificación enviada!</strong><br>` +
-          `El dueño de casa ya sabe que estás en la puerta.`
+          `Iniciando intercomunicador con el dueño...`
         );
-        // Vibración háptica si el navegador lo soporta
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-        // Resetear después de 8 segundos
+        // Guardar el ringId
+        const ringId = data.ringId;
+        
+        // Esperar 1.5 segundos para mostrar el éxito y pasar al intercomunicador
         setTimeout(() => {
-          setStatus('idle', '', 'Presioná el botón para tocar el timbre 👆');
-          hint.style.display = '';
-          busy = false;
-          btn.disabled = false;
-        }, 8000);
+          initializeIntercom(ringId);
+        }, 1500);
 
       } else if (res.status === 403 || data.code === 'TOO_FAR') {
         // ❌ Demasiado lejos
@@ -490,6 +624,330 @@
       );
       busy = false;
       btn.disabled = false;
+    }
+  }
+
+  // ──────────────────────────────────────────
+  // Lógica del Intercomunicador WebRTC + Socket.IO
+  // ──────────────────────────────────────────
+  let socket = null;
+  let peerConnection = null;
+  let localStream = null;
+  let currentRoomId = null;
+  let isMicMuted = false;
+  let isCamOff = false;
+
+  const peerConfiguration = {
+    iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' }
+    ]
+  };
+
+  function setIntercomStatus(type, label) {
+    const dot = document.getElementById('intercomStatusDot');
+    const lbl = document.getElementById('intercomStatusLabel');
+    const card = document.getElementById('intercomStatusCard');
+    
+    if (type === 'ringing') {
+      dot.className = 'pulse-dot-orange';
+      card.className = 'status-card state-loading';
+    } else if (type === 'connected') {
+      dot.className = 'pulse-dot-green';
+      card.className = 'status-card state-success';
+    } else if (type === 'ended') {
+      dot.className = '';
+      dot.style.background = 'var(--danger)';
+      card.className = 'status-card state-error';
+    }
+    lbl.textContent = label;
+  }
+
+  async function initializeIntercom(ringId) {
+    currentRoomId = ringId;
+    isMicMuted = false;
+    isCamOff = false;
+
+    // Resetear botones UI
+    const micBtn = document.getElementById('btnToggleMic');
+    const camBtn = document.getElementById('btnToggleCam');
+    micBtn.className = 'control-btn';
+    micBtn.textContent = '🎤';
+    camBtn.className = 'control-btn';
+    camBtn.textContent = '📷';
+
+    // Transición de UI
+    document.getElementById('homeTitle').style.display = 'none';
+    document.querySelector('.bell-container').style.display = 'none';
+    document.getElementById('geoHint').style.display = 'none';
+    document.getElementById('statusCard').style.display = 'none';
+    
+    const panel = document.getElementById('intercomPanel');
+    panel.style.display = 'flex';
+    
+    setIntercomStatus('ringing', 'Iniciando intercomunicador...');
+
+    // 1. Obtener cámara y micrófono local
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 320, height: 240, facingMode: 'user' },
+        audio: true
+      });
+      document.getElementById('localVideo').srcObject = localStream;
+      console.log('[Intercom] Cámara y micrófono local activados.');
+    } catch (err) {
+      console.warn('[Intercom] Error al acceder a cámara/mic. Intentando solo audio...', err);
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true
+        });
+        console.log('[Intercom] Micrófono local activado (sin video).');
+      } catch (audioErr) {
+        console.error('[Intercom] No se pudo obtener ningún stream local.', audioErr);
+        alert('Para usar el intercomunicador, necesitás permitir el acceso al micrófono en tu navegador.');
+      }
+    }
+
+    // 2. Conectar Socket.IO
+    socket = io();
+
+    socket.on('connect', () => {
+      console.log('[SOCKET] Conectado al servidor.');
+      // Unirse a la sala
+      socket.emit('join-room', { roomId: currentRoomId, role: 'visitor' });
+      setIntercomStatus('ringing', 'Llamando al dueño de casa...');
+    });
+
+    // Escuchar cuando el dueño de casa se conecta (acepta la llamada)
+    socket.on('peer-joined', ({ role }) => {
+      console.log(`[SOCKET] Peer unido: ${role}`);
+      if (role === 'admin') {
+        setIntercomStatus('ringing', 'Conectando con el dueño...');
+        startWebRTCPeerConnection();
+      }
+    });
+
+    // Manejar oferta y respuesta de WebRTC
+    socket.on('webrtc-offer', async (offer) => {
+      console.log('[WebRTC] Recibida oferta WebRTC del admin.');
+      if (!peerConnection) await startWebRTCPeerConnection(false);
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      const answer = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answer);
+      socket.emit('webrtc-answer', { roomId: currentRoomId, answer });
+    });
+
+    socket.on('webrtc-answer', async (answer) => {
+      console.log('[WebRTC] Recibida respuesta WebRTC del admin.');
+      if (peerConnection) {
+        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      }
+    });
+
+    socket.on('webrtc-candidate', async (candidate) => {
+      if (peerConnection) {
+        try {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          console.error('[WebRTC] Error agregando candidato ICE', e);
+        }
+      }
+    });
+
+    // Escuchar colgado del admin
+    socket.on('hang-up', () => {
+      console.log('[SOCKET] El dueño colgó la llamada.');
+      closeIntercom('Llamada finalizada por el dueño');
+    });
+
+    // Escuchar señal de apertura de puerta
+    socket.on('open-door', () => {
+      console.log('[SOCKET] ¡El dueño abrió la puerta!');
+      showOpenDoorAnimation();
+    });
+
+    socket.on('disconnect', () => {
+      console.log('[SOCKET] Desconectado del servidor.');
+    });
+  }
+
+  async function startWebRTCPeerConnection(createOffer = true) {
+    console.log('[WebRTC] Iniciando Peer Connection...');
+    peerConnection = new RTCPeerConnection(peerConfiguration);
+
+    if (localStream) {
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+    }
+
+    peerConnection.ontrack = (event) => {
+      console.log('[WebRTC] Stream remoto recibido.');
+      const remoteVideo = document.getElementById('remoteVideo');
+      const avatarPlaceholder = document.getElementById('remoteAvatarPlaceholder');
+      remoteVideo.srcObject = event.streams[0];
+      remoteVideo.style.display = 'block';
+      avatarPlaceholder.style.display = 'none';
+      setIntercomStatus('connected', '🟢 Hablando con el dueño');
+    };
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate && currentRoomId && socket) {
+        socket.emit('webrtc-candidate', { roomId: currentRoomId, candidate: event.candidate });
+      }
+    };
+
+    if (createOffer) {
+      try {
+        const offer = await peerConnection.createOffer({
+          offerToReceiveAudio: 1,
+          offerToReceiveVideo: 1
+        });
+        await peerConnection.setLocalDescription(offer);
+        socket.emit('webrtc-offer', { roomId: currentRoomId, offer });
+      } catch (err) {
+        console.error('[WebRTC] Error al crear la oferta', err);
+      }
+    }
+  }
+
+  function toggleMic() {
+    if (!localStream) return;
+    isMicMuted = !isMicMuted;
+    localStream.getAudioTracks().forEach(track => track.enabled = !isMicMuted);
+    
+    const btn = document.getElementById('btnToggleMic');
+    if (isMicMuted) {
+      btn.className = 'control-btn off';
+      btn.textContent = '🔇';
+    } else {
+      btn.className = 'control-btn';
+      btn.textContent = '🎤';
+    }
+  }
+
+  function toggleCam() {
+    if (!localStream) return;
+    isCamOff = !isCamOff;
+    localStream.getVideoTracks().forEach(track => track.enabled = !isCamOff);
+
+    const btn = document.getElementById('btnToggleCam');
+    if (isCamOff) {
+      btn.className = 'control-btn off';
+      btn.textContent = '🚫';
+    } else {
+      btn.className = 'control-btn';
+      btn.textContent = '📷';
+    }
+  }
+
+  function hangUpCall() {
+    if (socket && currentRoomId) {
+      socket.emit('hang-up', { roomId: currentRoomId });
+    }
+    closeIntercom('Llamada terminada');
+  }
+
+  function closeIntercom(statusMessage) {
+    setIntercomStatus('ended', statusMessage);
+    
+    // Detener streams
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+      localStream = null;
+    }
+    
+    if (peerConnection) {
+      peerConnection.close();
+      peerConnection = null;
+    }
+
+    if (socket) {
+      socket.disconnect();
+      socket = null;
+    }
+
+    document.getElementById('remoteVideo').srcObject = null;
+    document.getElementById('remoteVideo').style.display = 'none';
+    document.getElementById('remoteAvatarPlaceholder').style.display = 'flex';
+    document.getElementById('remoteAvatarText').textContent = 'Esperando al dueño...';
+
+    // Regresar a la pantalla del timbre tras 3 segundos
+    setTimeout(() => {
+      document.getElementById('intercomPanel').style.display = 'none';
+      document.getElementById('homeTitle').style.display = 'block';
+      document.querySelector('.bell-container').style.display = 'flex';
+      document.getElementById('geoHint').style.display = 'block';
+      
+      const mainCard = document.getElementById('statusCard');
+      mainCard.className = 'status-card state-idle';
+      mainCard.style.display = 'flex';
+      mainCard.innerHTML = `<div class="status-text">Presioná el botón para tocar el timbre 👆</div>`;
+      
+      busy = false;
+      btn.disabled = false;
+    }, 3000);
+  }
+
+  function showOpenDoorAnimation() {
+    playOpenDoorSound();
+    
+    const overlay = document.getElementById('openDoorOverlay');
+    const lockIcon = document.getElementById('lockIcon');
+    
+    overlay.style.display = 'flex';
+    // Forzar reflow
+    overlay.offsetHeight;
+    overlay.style.opacity = '1';
+    
+    // Animación de candado abriéndose
+    setTimeout(() => {
+      lockIcon.textContent = '🔓';
+      lockIcon.style.filter = 'drop-shadow(0 0 20px #00e676)';
+    }, 400);
+
+    // Cerrar llamada e intercom tras 6 segundos y restaurar todo
+    setTimeout(() => {
+      overlay.style.opacity = '0';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        lockIcon.textContent = '🔒';
+        lockIcon.style.filter = '';
+        closeIntercom('Llamada finalizada (Acceso concedido)');
+      }, 500);
+    }, 6000);
+  }
+
+  function playOpenDoorSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      // Dual-tone buzzing de cerradura eléctrica
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(120, audioCtx.currentTime); 
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(123, audioCtx.currentTime);
+      
+      gainNode.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.1);
+      gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + 1.8);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.0);
+      
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      osc1.start();
+      osc2.start();
+      osc1.stop(audioCtx.currentTime + 2.0);
+      osc2.stop(audioCtx.currentTime + 2.0);
+    } catch (e) {
+      console.warn('Web Audio API not supported or blocked', e);
     }
   }
 </script>
