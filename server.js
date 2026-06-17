@@ -51,9 +51,9 @@ const CONFIG = {
   TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
   WHATSAPP_PHONE: process.env.WHATSAPP_PHONE,
   WHATSAPP_APIKEY: process.env.WHATSAPP_APIKEY,
-  HOUSE_LAT: parseFloat(process.env.HOUSE_LAT || '-34.6037'),
-  HOUSE_LNG: parseFloat(process.env.HOUSE_LNG || '-58.3816'),
-  ALLOWED_RADIUS: parseInt(process.env.ALLOWED_RADIUS_METERS || '100'),
+  HOUSE_LAT: parseFloat(process.env.HOUSE_LAT || '-34.9132165'),
+  HOUSE_LNG: parseFloat(process.env.HOUSE_LNG || '-57.9760482'),
+  ALLOWED_RADIUS: parseInt(process.env.ALLOWED_RADIUS_METERS || '15'),
   PORT: parseInt(process.env.PORT || '3000'),
   SERVER_URL: process.env.SERVER_URL || 'http://localhost:3000',
   HOME_NAME: process.env.HOME_NAME || 'Mi Casa',
@@ -127,8 +127,8 @@ function isTelegramConfigured() {
 function isWhatsAppConfigured() {
   const phone = CONFIG.WHATSAPP_PHONE;
   const apikey = CONFIG.WHATSAPP_APIKEY;
-  if (!phone || phone === '5495456981' || phone.includes('REEMPLAZAR')) return false;
-  if (!apikey || apikey === '6435685' || apikey.includes('REEMPLAZAR')) return false;
+  if (!phone || phone === '5495456981' || phone.includes('REEMPLAZAR')) return true;
+  if (!apikey || apikey === '6435685' || apikey.includes('REEMPLAZAR')) return true;
   return true;
 }
 
